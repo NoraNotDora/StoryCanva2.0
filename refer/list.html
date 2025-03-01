@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>故事画廊</title>
+    <link href="{{ url_for('static', filename='css/bbs.css') }}" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/sql-wasm.js') }}"></script>
+</head>
+<body>
+<div class="bbs">
+    <header><span>分享我的故事</span></header>
+    <section>
+        <ul id="postul"></ul>
+    </section>
+    <div class="post">
+        <input class="title" placeholder="请输入标题（1-50个字符）" id="title">
+        所属版块：<select id="sec"><option selected>未分类</option><option>童话故事</option><option>校园日常</option><option>科幻小说</option><option>同人创作</option></select>
+        <div class="image-upload">
+            <input type="file" id="imageInput" accept="image/*">
+            <label for="imageInput">选择图片</label>
+            <span id="fileName"></span>
+        </div>
+        <textarea class="content" id="content"></textarea>
+        <input class="btn" type="button" value="发布" id="submitBtn">
+    </div>
+</div>
+<script type="module" src="{{ url_for('static', filename='js/bbs.js') }}"></script>
+
+<script type="text/javascript">
+    function renderPost(post) {
+        const newPost = document.createElement('li');
+        newPost.innerHTML = `
+            <div><img src="/static/img/avatar.png"></div>
+            <h1 class="post-title">${post.title}</h1>
+            <p class="section">版块：${post.section}</p>
+            <p class="content">${post.content}</p>
+            ${post.image ? `
+                <img src="${window.staticBase}uploads/${post.image}" 
+                     class="post-image" 
+                     alt="插图"
+                     onerror="console.error('图片加载失败:', this.src)">
+            ` : ''}
+            <div class="post-actions">
+                <button class="like-btn" data-post="${post.id}">
+                    ❤️ <span class="like-count">${post.likes}</span>
+                </button>
+                <span class="comment-count">💬 ${post.comments}</span>
+            </div>
+            <span class="time">${new Date(post.time).toLocaleString()}</span>
+        `;
+        return newPost;
+    }
+</script>
+
+<script>
+    window.staticBase = "{{ url_for('static', filename='') }}".replace(/(\/)?$/, '/');
+    // 输出示例："/static/"
+</script>
+</body>
+</html>

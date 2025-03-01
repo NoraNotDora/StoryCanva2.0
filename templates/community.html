@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Community - StoryCanva{% endblock %}
+
+{% block content %}
+<div class="container-xxl py-5">
+    <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s">
+        <h1 class="mb-3">故事社区</h1>
+        <h2 class="mb-3">Story Community</h2>
+    </div>
+
+    <link href="{{ url_for('static', filename='css/bbs.css') }}" rel="stylesheet">
+    <div class="bbs">
+        <header><span onclick="post()">分享我的故事</span></header>
+        <section>
+            <ul id="postul"></ul>
+        </section>
+        <div class="post">
+            <input class="title" placeholder="请输入标题（1-50个字符）" id="title">
+            所属版块：<select id="sec"><option selected>未分类</option><option>童话故事</option><option>校园日常</option><option>科幻小说</option><option>同人创作</option></select>
+            <input class="author" placeholder="请输入昵称（可选）" id="author">
+            <textarea class="content" id="content"></textarea>
+            <input class="btn" value="发布" onclick="postSuccess()">
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/bbs.js') }}"></script>
+    
+</div>
+{% endblock %} 

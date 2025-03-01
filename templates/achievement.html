@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Achievements - StoryCanva{% endblock %}
+
+{% block content %}
+<div class="container-xxl py-5">
+    <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s">
+        <h1 class="mb-3">我的成就</h1>
+        <h2 class="mb-3">My Achievements</h2>
+    </div>
+
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="row g-4">
+                <!-- 成就项列表 -->
+                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="classes-item">
+                        <div class="bg-light rounded-circle w-75 mx-auto p-3">
+                            <img class="img-fluid rounded-circle bg-light p-1" src="{{ url_for('static', filename='picture/故事探险家.png') }}" alt="">
+                        </div>
+                        <div class="bg-light rounded p-4 pt-5 mt-n5 text-center">
+                            <a class="d-block h3 mt-3 mb-4" href="">故事探险家</a>
+                            <div class="fs-6">累计创作1个故事</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                    <div class="classes-item">
+                        <div class="bg-light rounded-circle w-75 mx-auto p-3">
+                            <img class="img-fluid rounded-circle bg-light p-1" src="{{ url_for('static', filename='picture/故事小能手.png') }}" alt="">
+                        </div>
+                        <div class="bg-light rounded p-4 pt-5 mt-n5 text-center">
+                            <a class="d-block h3 mt-3 mb-4" href="">故事小能手</a>
+                            <div class="fs-6">累计创作5个故事</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
+                    <div class="classes-item">
+                        <div class="bg-light rounded-circle w-75 mx-auto p-3">
+                            <img class="img-fluid rounded-circle bg-light p-1" src="{{ url_for('static', filename='picture/故事小天才.png') }}" alt="">
+                        </div>
+                        <div class="bg-light rounded p-4 pt-5 mt-n5 text-center">
+                            <a class="d-block h3 mt-3 mb-4" href="">故事小天才</a>
+                            <div class="fs-6">累计创作10个故事</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="classes-item">
+                        <div class="bg-light rounded-circle w-75 mx-auto p-3">
+                            <img class="img-fluid rounded-circle bg-light p-1" src="{{ url_for('static', filename='picture/奇趣小作家.png') }}" alt="">
+                        </div>
+                        <div class="bg-light rounded p-4 pt-5 mt-n5 text-center">
+                            <a class="d-block h3 mt-3 mb-4" href="">奇趣小作家</a>
+                            <div class="fs-6">累计创作20个故事</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                    <div class="classes-item">
+                        <div class="bg-light rounded-circle w-75 mx-auto p-3">
+                            <img class="img-fluid rounded-circle bg-light p-1" src="{{ url_for('static', filename='picture/梦幻编织师.png') }}" alt="">
+                        </div>
+                        <div class="bg-light rounded p-4 pt-5 mt-n5 text-center">
+                            <a class="d-block h3 mt-3 mb-4" href="">梦幻编织师</a>
+                            <div class="fs-6">累计创作50个故事</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+{% endblock %} 

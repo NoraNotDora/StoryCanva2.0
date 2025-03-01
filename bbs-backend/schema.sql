@@ -1,0 +1,22 @@
+DROP TABLE IF EXISTS comments;
+DROP TABLE IF EXISTS posts;
+
+CREATE TABLE posts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    author TEXT,
+    date TEXT NOT NULL,
+    likes INTEGER DEFAULT 0,
+    views INTEGER DEFAULT 0
+);
+
+CREATE TABLE comments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    postId INTEGER NOT NULL,
+    content TEXT NOT NULL,
+    author TEXT,
+    date TEXT NOT NULL,
+    likes INTEGER DEFAULT 0,
+    FOREIGN KEY (postId) REFERENCES posts(id)
+); 

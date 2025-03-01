@@ -1,0 +1,349 @@
+{% extends "base.html" %}
+
+{% block title %}首页 - StoryCanva{% endblock %}
+
+{% block content %}
+<!-- 开头轮播图 -->
+<div class="container-fluid p-0 mb-5">
+    <div class="owl-carousel header-carousel position-relative">
+        <div class="owl-carousel-item position-relative">
+            <img class="img-fluid" src="{{ url_for('static', filename='picture/carousel-1.jpg') }}" alt="">
+            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center"
+                style="background: rgba(0, 0, 0, .2);">
+                <div class="container">
+                    <div class="row justify-content-start">
+                        <div class="col-10 col-lg-8">
+                            <h1 class="display-2 text-white animated slideInDown mb-4">The Best Story
+                                Land For Your Child</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="owl-carousel-item position-relative">
+            <img class="img-fluid" src="{{ url_for('static', filename='picture/carousel-2.jpg') }}" alt="">
+            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center"
+                style="background: rgba(0, 0, 0, .2);">
+                <div class="container">
+                    <div class="row justify-content-start">
+                        <div class="col-10 col-lg-8">
+                            <h1 class="display-2 text-white animated slideInDown mb-4">The Best Story
+                                Land For Your Child</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 创作输入区 -->
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="bg-light rounded">
+            <div class="row g-0">
+                <div class="col-lg-6 wow fadeIn" data-wow-delay="0.1s">
+                    <div class="h-100 d-flex flex-column justify-content-center p-5">
+                        <h2 class="mb-4">开始你的创作吧 Start your creation</h2>
+                        <form>
+                            <div class="row g-3">
+                                <div>
+                                    <p class="text-muted">
+                                        &emsp;&emsp;嘿，小朋友！你有没有想过写一个属于自己的故事呢?我超级期待听到你的想法哦！我们可以一起聊聊，
+                                        然后携手合作，共同创造出一个精彩绝伦的故事。
+                                    </p>
+                                    <p class="text-muted">
+                                        &emsp;&emsp;那么，你脑海中浮现出了什么奇妙的情节呢？是关于勇敢的探险，还是神秘的魔法？是描述友谊的力量，
+                                        还是展现成长的点滴？不管是什么，我都超级好奇，想要和你一起探索那个充满想象力的世界。
+                                    </p>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        <textarea class="form-control border-0" placeholder="Leave a message here" 
+                                                  id="message" style="height: 100px"></textarea>
+                                        <label for="message">Create</label>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <button class="btn btn-primary w-100 py-3" type="submit">语音输入</button>
+                                </div>
+                                <div class="col-6">
+                                    <button class="btn btn-primary w-100 py-3" type="submit">确定</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-lg-6 wow fadeIn" data-wow-delay="0.5s" style="min-height: 400px;">
+                    <div class="position-relative h-100">
+                        <img class="position-absolute w-100 h-100 rounded" 
+                             src="{{ url_for('static', filename='picture/appointment.jpg') }}"
+                             style="object-fit: cover;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 创作指南 -->
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
+            <h1 class="mb-3">创作指南</h1>
+            <h2 class="mb-3">Creative Guidelines</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-4 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
+                <div class="facility-item">
+                    <div class="facility-icon bg-primary">
+                        <span class="bg-primary"></span>
+                        <i class="fa fa-bus-alt fa-3x text-primary"></i>
+                        <span class="bg-primary"></span>
+                    </div>
+                    <div class="facility-text bg-primary col-lg-10 offset-lg-1">
+                        <h3 class="text-primary mb-3">第一步</h3>
+                        <p class="mb-0">描述故事的一个角色、一个道具或一个小环节，生成故事贴图，可以将故事贴图贴
+                            在画板上，做成拼贴画。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6 wow fadeInUp" data-wow-delay="0.3s">
+                <div class="facility-item">
+                    <div class="facility-icon bg-success">
+                        <span class="bg-success"></span>
+                        <i class="fa fa-futbol fa-3x text-success"></i>
+                        <span class="bg-success"></span>
+                    </div>
+                    <div class="facility-text bg-success col-lg-10 offset-lg-1">
+                        <h3 class="text-success mb-3">第二步</h3>
+                        <p class="mb-0">和机器人一起讲故事，通过语音输入和机器人进行对话
+                            完成一个故事的讲述。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6 wow fadeInUp" data-wow-delay="0.5s">
+                <div class="facility-item">
+                    <div class="facility-icon bg-warning">
+                        <span class="bg-warning"></span>
+                        <i class="fa fa-home fa-3x text-warning"></i>
+                        <span class="bg-warning"></span>
+                    </div>
+                    <div class="facility-text bg-warning col-lg-10 offset-lg-1">
+                        <h3 class="text-warning mb-3">第三步</h3>
+                        <p class="mb-0">点击"故事完成",机器人会把你讲过的内容整理成完整的故事,
+                            并且根据你的拼贴画生成一副完整的图画，点击"发布到社区"还可以把你的故事分享给其他小朋友~
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 用户评价 -->
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
+            <h1 class="mb-3">用户评价</h1>
+            <h2 class="mb-3">Our Clinets Say!</h2>
+        </div>
+        <div class="owl-carousel testimonial-carousel wow fadeInUp" data-wow-delay="0.1s">
+            <div class="testimonial-item bg-light rounded p-5">
+                <p class="fs-6" >StoryCanva真的是一个非常好的平台，它不仅激发了孩子的创造力还让孩子在玩乐中学会了故事创作。利用这个平台，孩子的想象力大大增加，
+                    我也可以通过平台参与到孩子的创作过程中，这让我们之间的亲子关系更加紧密。我非常推荐其他家长也让孩子试试StoryCanva!
+                </p>
+                <div class="d-flex align-items-center bg-white me-n5" style="border-radius: 50px 0 0 50px;">
+                    <img class="img-fluid flex-shrink-0 rounded-circle" 
+                         src="{{ url_for('static', filename='picture/testimonial-1.jpg') }}"
+                         style="width: 90px; height: 90px;">
+                    <div class="ps-3">
+                        <h3 class="mb-1">苏女士</h3>
+                        <span>家长</span>
+                    </div>
+                    <i class="fa fa-quote-right fa-3x text-primary ms-auto d-none d-sm-flex"></i>
+                </div>
+            </div>
+            <div class="testimonial-item bg-light rounded p-5">
+                <p class="fs-6">哇!我好喜欢StoryCanva!它帮我画出了我心里的故事。
+                    每当我有一个奇妙的想法，它就能帮我画出来，就像我真的在和这些角色-起玩一样!
+                    而且，每次完成一个故事，我都能和我的朋友们分享他们都说我的故事很有趣呢!
+                    用StoryCanva，我感觉自己就像是一个真正的作家!</p>
+                <div class="d-flex align-items-center bg-white me-n5" style="border-radius: 50px 0 0 50px;">
+                    <img class="img-fluid flex-shrink-0 rounded-circle" 
+                         src="{{ url_for('static', filename='picture/testimonial-2.jpg') }}"
+                         style="width: 90px; height: 90px;">
+                    <div class="ps-3">
+                        <h3 class="mb-1">酷酷</h3>
+                        <span>8岁</span>
+                    </div>
+                    <i class="fa fa-quote-right fa-3x text-primary ms-auto d-none d-sm-flex"></i>
+                </div>
+            </div>
+            <div class="testimonial-item bg-light rounded p-5">
+                <p class="fs-6">StoryCanva真的是一个非常好的平台，它不仅激发了孩子的创造力还让孩子在玩乐中学会了故事创作。
+                    自从学生开始使用Storvcanva后她的想象力和表达能力都有了明显的提升。
+                    这个平台的多模态共创功能，让孩子可以从多个角度去感受和理解故事，真正实现了'以声绘色'。
+                    </p>
+                <div class="d-flex align-items-center bg-white me-n5" style="border-radius: 50px 0 0 50px;">
+                    <img class="img-fluid flex-shrink-0 rounded-circle" 
+                         src="{{ url_for('static', filename='picture/testimonial-3.jpg') }}"
+                         style="width: 90px; height: 90px;">
+                    <div class="ps-3">
+                        <h3 class="mb-1">苏先生</h3>
+                        <span>老师</span>
+                    </div>
+                    <i class="fa fa-quote-right fa-3x text-primary ms-auto d-none d-sm-flex"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 故事画廊 -->
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
+            <h1 class="mb-3">故事画廊</h1>
+            <h2 class="mb-3">Story Gallery</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                <div class="classes-item">
+                    <div class="bg-light rounded-circle w-75 mx-auto p-3">
+                        <img class="img-fluid rounded bg-light p-1" 
+                             src="{{ url_for('static', filename='picture/classes-1.jpg') }}" alt="">
+                    </div>
+                    <div class="bg-light rounded p-4 pt-5 mt-n5">
+                        <a class="d-block text-center h3 mt-3 mb-4" href="">故事一</a>
+                        <div class="fs-6">
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis similique in doloribus officia, eligendi eaque, 
+                            beatae, iure quod qui eum nisi suscipit? Deserunt sit reiciendis magnam qui quae, excepturi maiores.
+                            Deserunt voluptas laborum, aut iusto quos beatae provident, delectus necessitatibus soluta perspiciatis expedita nisi 
+                            fugiat, a in dolore tenetur hic suscipit! 
+                        </div>
+                        <a href="#"><div class="rounded-circle bg-primary d-flex justify-content-center align-items-center mt-1 offset-10" style="width: 45px; height: 45px;color: white;">
+                            <i class="bi bi-arrow-right fs-5"></i>
+                        </div></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                <div class="classes-item">
+                    <div class="bg-light rounded-circle w-75 mx-auto p-3">
+                        <img class="img-fluid rounded bg-light p-1" 
+                             src="{{ url_for('static', filename='picture/classes-2.jpg') }}" alt="">
+                    </div>
+                    <div class="bg-light rounded p-4 pt-5 mt-n5">
+                        <a class="d-block text-center h3 mt-3 mb-4" href="">故事一</a>
+                        <div class="fs-6">
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis similique in doloribus officia, eligendi eaque, 
+                            beatae, iure quod qui eum nisi suscipit? Deserunt sit reiciendis magnam qui quae, excepturi maiores.
+                            Deserunt voluptas laborum, aut iusto quos beatae provident, delectus necessitatibus soluta perspiciatis expedita nisi 
+                            fugiat, a in dolore tenetur hic suscipit! 
+                        </div>
+                        <a href="#"><div class="rounded-circle bg-primary d-flex justify-content-center align-items-center mt-1 offset-10" style="width: 45px; height: 45px;color: white;">
+                            <i class="bi bi-arrow-right fs-5"></i>
+                        </div></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
+                <div class="classes-item">
+                    <div class="bg-light rounded-circle w-75 mx-auto p-3">
+                        <img class="img-fluid rounded bg-light p-1" 
+                             src="{{ url_for('static', filename='picture/classes-3.jpg') }}" alt="">
+                    </div>
+                    <div class="bg-light rounded p-4 pt-5 mt-n5">
+                        <a class="d-block text-center h3 mt-3 mb-4" href="">故事一</a>
+                        <div class="fs-6">
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis similique in doloribus officia, eligendi eaque, 
+                            beatae, iure quod qui eum nisi suscipit? Deserunt sit reiciendis magnam qui quae, excepturi maiores.
+                            Deserunt voluptas laborum, aut iusto quos beatae provident, delectus necessitatibus soluta perspiciatis expedita nisi 
+                            fugiat, a in dolore tenetur hic suscipit! 
+                        </div>
+                        <a href="#"><div class="rounded-circle bg-primary d-flex justify-content-center align-items-center mt-1 offset-10" style="width: 45px; height: 45px;color: white;">
+                            <i class="bi bi-arrow-right fs-5"></i>
+                        </div></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                <div class="classes-item">
+                    <div class="bg-light rounded-circle w-75 mx-auto p-3">
+                        <img class="img-fluid rounded bg-light p-1" 
+                             src="{{ url_for('static', filename='picture/classes-4.jpg') }}" alt="">
+                    </div>
+                    <div class="bg-light rounded p-4 pt-5 mt-n5">
+                        <a class="d-block text-center h3 mt-3 mb-4" href="">故事一</a>
+                        <div class="fs-6">
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis similique in doloribus officia, eligendi eaque, 
+                            beatae, iure quod qui eum nisi suscipit? Deserunt sit reiciendis magnam qui quae, excepturi maiores.
+                            Deserunt voluptas laborum, aut iusto quos beatae provident, delectus necessitatibus soluta perspiciatis expedita nisi 
+                            fugiat, a in dolore tenetur hic suscipit! 
+                        </div>
+                        <a href="#"><div class="rounded-circle bg-primary d-flex justify-content-center align-items-center mt-1 offset-10" style="width: 45px; height: 45px;color: white;">
+                            <i class="bi bi-arrow-right fs-5"></i>
+                        </div></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                <div class="classes-item">
+                    <div class="bg-light rounded-circle w-75 mx-auto p-3">
+                        <img class="img-fluid rounded bg-light p-1" 
+                             src="{{ url_for('static', filename='picture/classes-5.jpg') }}" alt="">
+                    </div>
+                    <div class="bg-light rounded p-4 pt-5 mt-n5">
+                        <a class="d-block text-center h3 mt-3 mb-4" href="">故事一</a>
+                        <div class="fs-6">
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis similique in doloribus officia, eligendi eaque, 
+                            beatae, iure quod qui eum nisi suscipit? Deserunt sit reiciendis magnam qui quae, excepturi maiores.
+                            Deserunt voluptas laborum, aut iusto quos beatae provident, delectus necessitatibus soluta perspiciatis expedita nisi 
+                            fugiat, a in dolore tenetur hic suscipit! 
+                        </div>
+                        <a href="#"><div class="rounded-circle bg-primary d-flex justify-content-center align-items-center mt-1 offset-10" style="width: 45px; height: 45px;color: white;">
+                            <i class="bi bi-arrow-right fs-5"></i>
+                        </div></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
+                <div class="classes-item">
+                    <div class="bg-light rounded-circle w-75 mx-auto p-3">
+                        <img class="img-fluid rounded bg-light p-1" 
+                             src="{{ url_for('static', filename='picture/classes-6.jpg') }}" alt="">
+                    </div>
+                    <div class="bg-light rounded p-4 pt-5 mt-n5">
+                        <a class="d-block text-center h3 mt-3 mb-4" href="">故事一</a>
+                        <div class="fs-6">
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis similique in doloribus officia, eligendi eaque, 
+                            beatae, iure quod qui eum nisi suscipit? Deserunt sit reiciendis magnam qui quae, excepturi maiores.
+                            Deserunt voluptas laborum, aut iusto quos beatae provident, delectus necessitatibus soluta perspiciatis expedita nisi 
+                            fugiat, a in dolore tenetur hic suscipit! 
+                        </div>
+                        <a href="#"><div class="rounded-circle bg-primary d-flex justify-content-center align-items-center mt-1 offset-10" style="width: 45px; height: 45px;color: white;">
+                            <i class="bi bi-arrow-right fs-5"></i>
+                        </div></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- 首页特有JS -->
+<script>
+    // 初始化轮播
+    $('.owl-carousel').owlCarousel({
+        items: 1,
+        loop: true,
+        autoplay: true,
+        smartSpeed: 1000
+    });
+</script>
+{% endblock %}

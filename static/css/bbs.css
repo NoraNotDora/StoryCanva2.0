@@ -1,0 +1,135 @@
+*{margin: 0; padding: 0; font-family: "Arial", "΢���ź�";}
+ul,li{list-style: none;}
+.bbs{margin: 0 auto; width: 600px; position: relative;}
+header{padding: 5px 0; border-bottom: 1px solid #cecece;}
+header span{display:inline-block; width: 220px; height: 50px; color: #fff; background: #FE5D37; font-size: 18px; font-weight: bold; text-align: center;line-height: 50px; border-radius: 8px; cursor: pointer;}
+.post{position: absolute; background: #FFF5F3; border: 1px #cccccc solid; width: 500px; left: 65px; top:70px; padding: 10px; font-size: 14px; z-index: 999999; display: none;}
+.post .title{width: 450px; height:30px; line-height: 30px; display: block; border: 1px #cecece solid; margin-bottom: 10px;}
+.post select{width: 200px; height: 30px;}
+.post .content{width: 450px; height: 200px; display: block; margin: 10px 0;border: 1px #cecece solid;}
+.post .btn{width: 160px; height: 35px; color: #fff; background: #FE5D37; border: none; font-size: 14px; font-weight: bold; text-align: center; line-height: 35px; border-radius: 8px; cursor: pointer;}
+
+.bbs section ul li{padding: 10px 0; border-bottom: 1px #999999 dashed;
+    overflow: hidden;}
+.bbs section ul li div{float: left; width: 60px; margin-right: 10px;}
+.bbs section ul li div img{ border-radius:50%; width: 60px;}
+.bbs section ul li h1{float: left; width: 520px; font-size: 16px; line-height: 35px;}
+.bbs section ul li p{color: #666666; line-height: 25px; font-size: 12px; overflow: hidden;}
+.bbs section ul li p span{padding-right:20px;}
+
+/* 添加点赞样式 */
+.post-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    margin-top: 12px;
+}
+
+.like-btn {
+    order: 1;
+    flex-shrink: 0;
+    background: #fff5f3;
+    padding: 4px 12px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.like-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(254,93,55,0.2);
+}
+
+.like-count {
+    margin-left: 5px;
+    font-size: 0.9em;
+}
+
+.comment-count {
+    order: 2;
+    flex-shrink: 0;
+    background: #FFF5F3;
+    color: #FE5D37;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-left: 0;
+    transition: all 0.3s ease;
+}
+
+.comment-count:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(254,93,55,0.2);
+}
+
+@media (max-width: 600px) {
+    .bbs {
+        width: 95%;
+        padding: 0 10px;
+    }
+    
+    .post-actions {
+        gap: 4px;
+        padding: 4px 0;
+    }
+    
+    .like-btn, .comment-count {
+        padding: 3px 8px;
+        font-size: 0.85em;
+    }
+}
+
+/* 添加时间戳样式 */
+.bbs section ul li .time {
+    float: right;
+    color: #cecece;
+    font-size: 0.9em;
+    margin-left: 10px;
+}
+
+/* 清除浮动 */
+.bbs section ul li:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.time {
+    float: right;
+    color: #cecece !important;
+    font-size: 0.9em;
+    margin-left: 15px;
+}
+
+/* 图片上传样式 */
+.image-upload {
+    margin: 10px 0;
+}
+
+#imageInput {
+    display: none;
+}
+
+.image-upload label {
+    background: #FE5D37;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#fileName {
+    margin-left: 10px;
+    color: #666;
+    font-size: 12px;
+}
+
+/* 帖子图片显示 */
+.post-image {
+    display: block !important;
+    max-width: 100%;
+    height: auto;
+    margin: 10px 0;
+}

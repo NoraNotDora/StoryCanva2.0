@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Detail - StoryCanva{% endblock %}
+
+{% block content %}
+<div class="container-xxl py-5">
+	<div class="text-center mx-auto mb-5 wow fadeInUp">
+		<h1 class="mb-3">故事详情</h1>
+		<h2 class="mb-3">Story Detail</h2>
+	</div>
+    <link href="{{ url_for('static', filename='css/detail.css') }}" rel="stylesheet">
+
+    <div class="bbs">
+        <header>
+            <button id="back-to-index" onclick="window.location.href='/community'">返回列表</button>
+        </header>
+        <section id="post-detail">
+            <!-- 帖子详情内容将在这里加载 -->
+        </section>
+    </div>
+    <script src="{{ url_for('static', filename='js/detail.js') }}"></script>
+</div>
+{% endblock %}
