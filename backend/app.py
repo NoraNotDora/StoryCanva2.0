@@ -5,23 +5,60 @@ import os
 
 
 app = Flask(__name__)
+app.template_folder = '../frontend/templates/'
+app.static_folder = '../frontend/static/'
 CORS(app)
 
 # 连接数据库
-DATABASE = './bbs-backend/story.db'
+DATABASE = './bbs/story.db'
 
+# 数据库连接设置
 def get_db_connection():
-    conn = sqlite3.connect(DATABASE)
-    conn.row_factory = sqlite3.Row #  将行数据以字典形式返回
-    return conn
+    try:
+        # 获取当前文件的绝对路径
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        # 构建数据库的绝对路径
+        db_path = os.path.join(current_dir, 'bbs', 'story.db')
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        return conn
+    except sqlite3.Error as e:
+        print(f"数据库连接错误: {e}")
+        # 如果连接失败，尝试创建新的数据库文件
+        create_new_database()
+        # 再次尝试连接
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        db_path = os.path.join(current_dir, 'bbs', 'story.db')
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        return conn
 
-def init_db():
-    with app.app_context():
-        db = get_db_connection()
-        with open('./bbs-backend/schema.sql', 'r') as f:
-            db.executescript(f.read())
-        db.commit()
-        db.close()
+# 创建新的数据库函数
+def create_new_database():
+    try:
+        # 获取当前文件的绝对路径
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        # 确保bbs目录存在
+        bbs_dir = os.path.join(current_dir, 'bbs')
+        os.makedirs(bbs_dir, exist_ok=True)
+        
+        # 构建数据库的绝对路径
+        db_path = os.path.join(bbs_dir, 'story.db')
+        
+        # 创建新的数据库连接
+        conn = sqlite3.connect(db_path)
+        
+        # 读取schema.sql文件并执行
+        schema_path = os.path.join(bbs_dir, 'schema.sql')
+        with open(schema_path, 'r') as f:
+            conn.executescript(f.read())
+        
+        conn.commit()
+        conn.close()
+        print(f"成功创建新的数据库文件: {db_path}")
+    except Exception as e:
+        print(f"创建数据库时出错: {e}")
+        raise
 
 def create_tables():
     conn = get_db_connection()
@@ -180,18 +217,6 @@ def like_comment(comment_id):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 @app.route('/contact')
 def contact():
     return render_template('contact.html')
@@ -208,8 +233,10 @@ if __name__ == '__main__':
     app.debug = True
 
     #  检查数据库文件是否存在，如果不存在则初始化数据库
-    if not os.path.exists(DATABASE):
-        init_db()
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(current_dir, 'bbs', 'story.db')
+    if not os.path.exists(db_path):
+        create_new_database()
     
     # 注册测试路由（仅在开发模式）
     if app.debug:
