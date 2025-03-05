@@ -157,22 +157,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 更新流式响应内容
     function updateStreamResponse(messageElement, content) {
+        console.log("更新流式响应:", content.substring(0, 50) + (content.length > 50 ? "..." : ""));
+        
         // 更新历史记录中最后一条消息的内容
         if (chatHistory.length > 0) {
             chatHistory[chatHistory.length - 1].content = content;
         }
 
-        // 清空现有内容
-        while (messageElement.firstChild) {
-            if (messageElement.firstChild.classList && messageElement.firstChild.classList.contains('copy-button')) {
-                messageElement.firstChild.nextSibling = null;
-            } else {
-                messageElement.removeChild(messageElement.firstChild);
-            }
-        }
-        
         // 保留复制按钮
         const copyButton = messageElement.querySelector('.copy-button');
+        
+        // 完全清空元素内容
+        messageElement.innerHTML = '';
+        
+        // 重新添加复制按钮
+        if (copyButton) {
+            messageElement.appendChild(copyButton);
+            copyButton.style.display = 'none'; // 暂时隐藏，等内容加载完再显示
+        }
         
         // 检查代码块并应用语法高亮
         const codeRegex = /```(\w+)?\s*([\s\S]*?)```/g;
@@ -182,7 +184,8 @@ document.addEventListener('DOMContentLoaded', function() {
         while ((match = codeRegex.exec(content)) !== null) {
             // 添加代码块前的文本
             if (match.index > lastIndex) {
-                messageElement.appendChild(document.createTextNode(content.slice(lastIndex, match.index)));
+                const textNode = document.createTextNode(content.slice(lastIndex, match.index));
+                messageElement.appendChild(textNode);
             }
             
             // 创建代码块
@@ -200,10 +203,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 添加最后一个代码块后的剩余文本
         if (lastIndex < content.length) {
-            messageElement.appendChild(document.createTextNode(content.slice(lastIndex)));
+            const textNode = document.createTextNode(content.slice(lastIndex));
+            messageElement.appendChild(textNode);
         }
         
-        // 重新添加复制按钮到最前面
+        // 确保复制按钮在最前面
         if (copyButton) {
             messageElement.insertBefore(copyButton, messageElement.firstChild);
             copyButton.style.display = 'block';
@@ -269,6 +273,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 content: msg.content
             }));
             
+            console.log("发送消息历史:", messages);
+            
             // 创建流式响应容器
             const { messageElement, copyButton } = createStreamResponseContainer();
             
@@ -294,6 +300,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 function readStream() {
                     return reader.read().then(({ done, value }) => {
                         if (done) {
+                            console.log("流结束，最终响应:", responseText.substring(0, 50) + (responseText.length > 50 ? "..." : ""));
                             // 流结束，显示复制按钮
                             copyButton.style.display = 'block';
                             return;
@@ -301,13 +308,38 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         // 解码并添加到响应文本
                         const chunk = decoder.decode(value, { stream: true });
-                        responseText += chunk;
+                        console.log("收到数据块:", chunk.substring(0, 50) + (chunk.length > 50 ? "..." : ""));
+                        
+                        try {
+                            // 检查是否是JSON格式的错误消息
+                            const jsonData = JSON.parse(chunk);
+                            console.log("解析为JSON:", jsonData);
+                            if (jsonData.error) {
+                                responseText = jsonData.error;
+                                updateStreamResponse(messageElement, responseText);
+                                copyButton.style.display = 'block';
+                                return;
+                            }
+                            // 如果是其他类型的JSON数据，可能需要特殊处理
+                            if (jsonData.content) {
+                                responseText += jsonData.content;
+                            } else {
+                                responseText += JSON.stringify(jsonData);
+                            }
+                        } catch (e) {
+                            // 不是JSON，继续正常处理
+                            responseText += chunk;
+                        }
                         
                         // 更新UI
                         updateStreamResponse(messageElement, responseText);
                         
                         // 继续读取流
                         return readStream();
+                    }).catch(error => {
+                        console.error("读取流时出错:", error);
+                        updateStreamResponse(messageElement, responseText + "\n\n[读取数据时出错]");
+                        copyButton.style.display = 'block';
                     });
                 }
                 

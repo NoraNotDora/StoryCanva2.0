@@ -1,6 +1,7 @@
 import litellm
 import os
-
+from dotenv import load_dotenv
+load_dotenv()
 def chat_completion(provider,model, messages,stream=False,api_base=None,api_key=None,**kwargs):
     if api_key is None:
         api_key=os.environ.get(provider.upper()+"_API_KEY")
@@ -160,7 +161,8 @@ def chat_stream(model, messages,stream=True,api_base=None,api_key=None,**kwargs)
         api_key=os.environ.get(provider.upper()+"_API_KEY")
         api_base=os.environ.get(provider.upper()+"_API_BASE")
 
-    
+    print(f"api_base: {api_base}")
+    print(f"api_key: {api_key}")
     client = OpenAI(
         base_url=api_base,
         api_key=api_key,
@@ -179,6 +181,7 @@ def chat_stream(model, messages,stream=True,api_base=None,api_key=None,**kwargs)
         if (len(chunk.choices)>0 and
             hasattr(chunk.choices[0].delta, 'content') and 
             chunk.choices[0].delta.content is not None):
+            print(chunk.choices[0].delta.content)
             yield chunk.choices[0].delta.content
 
 async def chat_async(model, messages,api_base=None,api_key=None,**kwargs):
@@ -319,3 +322,7 @@ def chat_reasoner(model,messages,stream=False,api_base=None,api_key=None,**kwarg
             return completion.choices[0].message.content
 
 __all__=["chat","describe_image","set_multimodal_messages","chat_reasoner","guess_provider","chat_async"]
+
+if __name__ == '__main__':
+    for x in chat_stream("gpt-4o-mini", [{"role": "user", "content": "你好"}]):
+        print(x)
