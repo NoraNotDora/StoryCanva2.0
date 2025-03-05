@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Community - StoryCanva{% endblock %}
+{% block title %}社区 - StoryCanva{% endblock %}
 
 {% block content %}
 <div class="container-xxl py-5">
@@ -9,21 +9,90 @@
         <h2 class="mb-3">Story Community</h2>
     </div>
 
-    <link href="{{ url_for('static', filename='css/bbs.css') }}" rel="stylesheet">
-    <div class="bbs">
-        <header><span onclick="post()">分享我的故事</span></header>
-        <section>
-            <ul id="postul"></ul>
-        </section>
-        <div class="post">
-            <input class="title" placeholder="请输入标题（1-50个字符）" id="title">
-            所属版块：<select id="sec"><option selected>未分类</option><option>童话故事</option><option>校园日常</option><option>科幻小说</option><option>同人创作</option></select>
-            <input class="author" placeholder="请输入昵称（可选）" id="author">
-            <textarea class="content" id="content"></textarea>
-            <input class="btn" value="发布" onclick="postSuccess()">
+    <div class="mb-4 text-center">
+        <a href="/create" class="btn btn-primary btn-lg">
+            <i class="fas fa-pen-fancy me-2"></i>分享我的故事
+        </a>
+    </div>
+
+    <div id="posts-container" class="mt-4">
+        <!-- 帖子将在这里动态加载 -->
+        <div class="text-center py-5" id="loading-indicator">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">加载中...</span>
+            </div>
+            <p class="mt-2">正在加载故事...</p>
         </div>
     </div>
-    <script src="{{ url_for('static', filename='js/bbs.js') }}"></script>
-    
 </div>
+{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/community.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const postsContainer = document.getElementById('posts-container');
+    const loadingIndicator = document.getElementById('loading-indicator');
+    
+    // 获取帖子列表
+    fetch('/api/posts')
+        .then(response => response.json())
+        .then(posts => {
+            // 隐藏加载指示器
+            loadingIndicator.style.display = 'none';
+            
+            if (posts.length === 0) {
+                postsContainer.innerHTML = '<div class="alert alert-info text-center">暂无故事，快来分享你的故事吧！</div>';
+                return;
+            }
+            
+            // 创建行容器
+            const rowElement = document.createElement('div');
+            rowElement.className = 'row';
+            postsContainer.appendChild(rowElement);
+            
+            posts.forEach(post => {
+                const postElement = document.createElement('div');
+                postElement.className = 'col-lg-4 col-md-6 mb-4';
+                
+                // 构建图片路径
+                const imagePath = post.image_path 
+                    ? `/static/${post.image_path}` 
+                    : '/static/picture/placeholder.jpg';
+                
+                postElement.innerHTML = `
+                    <div class="card h-100">
+                        <img src="${imagePath}" 
+                             class="card-img-top" 
+                             alt="${post.title}"
+                             onerror="this.src='/static/picture/placeholder.jpg'; this.onerror=null;">
+                        <div class="card-body">
+                            <h5 class="card-title">${post.title}</h5>
+                            <p class="card-text">${post.content.length > 100 ? post.content.substring(0, 100) + '...' : post.content}</p>
+                        </div>
+                        <div class="card-footer">
+                            <small class="text-muted">
+                                <i class="fas fa-user"></i> ${post.author} &nbsp;
+                                <i class="fas fa-calendar"></i> ${post.date} &nbsp;
+                                <i class="fas fa-eye"></i> ${post.views} &nbsp;
+                                <i class="fas fa-heart"></i> ${post.likes}
+                            </small>
+                            <a href="/detail/${post.id}" class="btn btn-sm btn-primary float-end">阅读全文</a>
+                        </div>
+                    </div>
+                `;
+                
+                rowElement.appendChild(postElement);
+            });
+        })
+        .catch(error => {
+            console.error('获取帖子失败:', error);
+            loadingIndicator.style.display = 'none';
+            postsContainer.innerHTML = '<div class="alert alert-danger text-center">获取故事列表失败，请稍后再试</div>';
+        });
+});
+</script>
 {% endblock %} 

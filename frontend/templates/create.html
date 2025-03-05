@@ -1,17 +1,101 @@
 {% extends "base.html" %}
 
-{% block title %}Create - StoryCanva{% endblock %}
+{% block title %}创作故事 - StoryCanva{% endblock %}
 
 {% block content %}
 <div class="container-xxl py-5">
-	<div class="text-center mx-auto mb-5 wow fadeInUp">
-		<h1 class="mb-3">开始创作</h1>
-		<h2 class="mb-3">Start Creating</h2>
+	<div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s">
+		<h1 class="mb-3">创作你的故事</h1>
+		<p>在这里，你可以自由创作，分享你的故事</p>
 	</div>
-	
-	<!-- 创作表单内容 -->
+	<div class="row g-4 mt-2">
+		<div class="col-md-8">
+			<iframe src="https://www.baidu.com" width="100%" height="1060px"></iframe>
+		</div>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">
+		<div class="col-md-4" style="height: 1000px;">
+			<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+				<div class="container">
+					<a class="navbar-brand" href="#">故事机器人</a>
+					<div class="ms-auto">
+						<button class="btn btn-outline-light btn-sm fs-6 text-nowrap px-2 me-1" id="copyChat" aria-label="Copy entire chat">复制对话</button>
+						<button class="btn btn-outline-light btn-sm fs-6 text-nowrap px-2 me-1" id="clearChat" aria-label="Clear chat history">清空对话</button>
+					</div>
+				</div>
+			</nav>
+		
+			<div class="container d-flex flex-column flex-grow-1 h-100">
+				<div class="chat-container" id="chatContainer" style="flex: 1 1 auto; overflow-y: auto; max-height: calc(100% - 120px);">
+					<div class="message-group system-group">
+						<div class="message-label">bot</div>
+						<div class="chat-message system-message">
+							<button class="copy-button" aria-label="Copy message">📋</button>
+							哈喽小朋友！
+						</div>
+					</div>
+				</div>
+				<div class="input-container" style="position: sticky; bottom: 0; z-index: 1000; background-color: inherit;">
+					<div class="container">
+						<div class="input-group">
+							<textarea class="form-control chat-input" id="chatInput" placeholder="想和我说些什么呢？" aria-label="Chat input"></textarea>
+							<button class="btn btn-primary" type="button" id="sendMessage" aria-label="Send message"><i class="fas fa-paper-plane"></i></button>
+							<button class="btn btn-secondary" type="button" id="clearInput" aria-label="Clear input"><i class="fas fa-eraser"></i></button>
+						</div>
+					</div>
+				</div>
+			</div>
+		
+			<!-- Notification Bar -->
+			<div id="notificationBar" class="notification-bar">
+				故事记录已经复制
+			</div>
+		
+			<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+			<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+		</div>
+	</div>
 	<div class="row g-4">
-		<!-- 表单元素... -->
+		<div class="col-12 wow fadeInUp" data-wow-delay="0.3s">
+			<form id="publish-form" class="bg-light rounded p-5" enctype="multipart/form-data">
+				<div class="row g-3">
+					<div class="col-12">
+						<div class="form-floating">
+							<input type="text" class="form-control border-0" id="title" placeholder="故事标题">
+							<label for="title">故事标题</label>
+						</div>
+					</div>
+					<div class="col-12">
+						<div class="form-floating">
+							<textarea class="form-control border-0" id="content" placeholder="故事内容" style="height: 300px"></textarea>
+							<label for="content">故事内容</label>
+						</div>
+					</div>
+					<div class="col-12">
+						<label for="story-image" class="form-label">故事插图 (可选)</label>
+						<input class="form-control" type="file" id="story-image" accept="image/*">
+						<div class="mt-2">
+							<img id="image-preview" src="#" alt="图片预览" style="max-width: 100%; max-height: 300px; display: none;">
+						</div>
+					</div>
+					<div class="col-12">
+						<div class="form-check">
+							<input class="form-check-input" type="checkbox" id="is-public">
+							<label class="form-check-label" for="is-public">
+								公开到社区（其他用户可以看到您的故事）
+							</label>
+						</div>
+					</div>
+					<div class="col-12">
+						<button class="btn btn-primary w-100 py-3" type="submit">发布故事</button>
+					</div>
+				</div>
+			</form>
+		</div>
 	</div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/create.js') }}"></script>
 {% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ user.username }} 的所有故事 - StoryCanva{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">{{ user.username }} 发布的所有故事</h3>
+                </div>
+                <div class="card-body">
+                    {% if posts %}
+                        <div class="list-group">
+                            {% for post in posts %}
+                                <a href="{{ url_for('serve_detail', post_id=post.id) }}" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1">{{ post.title }}</h5>
+                                        <small>{{ post.date }}</small>
+                                    </div>
+                                    <p class="mb-1">{{ post.content|truncate(200) }}</p>
+                                    <small>
+                                        <i class="fas fa-eye"></i> {{ post.views }} 浏览
+                                        <i class="fas fa-heart"></i> {{ post.likes }} 点赞
+                                        <i class="fas fa-comment"></i> {{ post.comment_count }} 评论
+                                    </small>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            该用户还没有发布任何故事。
+                        </div>
+                    {% endif %}
+                    
+                    <div class="mt-3">
+                        <a href="{{ url_for('profile', username=user.username) }}" class="btn btn-outline-primary">返回个人主页</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,23 +1,147 @@
 {% extends "base.html" %}
 
-{% block title %}Detail - StoryCanva{% endblock %}
+{% block title %}{{ post.title }} - StoryCanva{% endblock %}
 
 {% block content %}
 <div class="container-xxl py-5">
 	<div class="text-center mx-auto mb-5 wow fadeInUp">
 		<h1 class="mb-3">故事详情</h1>
-		<h2 class="mb-3">Story Detail</h2>
 	</div>
     <link href="{{ url_for('static', filename='css/detail.css') }}" rel="stylesheet">
 
     <div class="bbs">
         <header>
-            <button id="back-to-index" onclick="window.location.href='/community'">返回列表</button>
+            <button id="back-to-index" onclick="window.location.href='/community'">返回社区</button>
+            <button id="back-to-index" onclick="window.location.href='/my-stories'">返回我的故事</button>
         </header>
         <section id="post-detail">
-            <!-- 帖子详情内容将在这里加载 -->
+            <div class="post-header">
+                <h1>{{ post.title }}</h1>
+                <div class="post-meta">
+                    <span>作者: {{ post.author }}</span>
+                    <span>发布时间: {{ post.date }}</span>
+                    <span><i class="fas fa-eye"></i> {{ post.views }}</span>
+                    <span><i class="fas fa-heart"></i> {{ post.likes }}</span>
+                </div>
+            </div>
+            <div class="post-content mb-4">
+                {{ post.content|safe }}
+                
+                {% if post.image_path %}
+                <div class="post-image mt-3">
+                    <img src="{{ url_for('static', filename=post.image_path) }}" 
+                         class="img-fluid rounded mx-auto d-block" 
+                         style="max-width: 100%; max-height: 500px; object-fit: contain; display: block; margin: 0 auto;"
+                         alt="故事插图"
+                         onerror="this.src='{{ url_for('static', filename='picture/placeholder.jpg') }}'; this.onerror=null;">
+                </div>
+                {% endif %}
+            </div>
+            <div class="post-actions">
+                <button id="like-post" onclick="likePost({{ post.id }})">
+                    <i class="fas fa-heart"></i> 点赞 ({{ post.likes }})
+                </button>
+            </div>
+            
+            <!-- 评论部分 -->
+            <div class="comments-section">
+                <h3>评论 ({{ comments|length }})</h3>
+                <div class="comment-form">
+                    <textarea id="comment-content" placeholder="写下你的评论..."></textarea>
+                    <button onclick="submitComment({{ post.id }})">发表评论</button>
+                </div>
+                <div class="comments-list" id="comments-list">
+                    {% if comments %}
+                        {% for comment in comments %}
+                            <div class="comment">
+                                <div class="comment-header">
+                                    <span class="comment-author">{{ comment.author }}</span>
+                                    <span class="comment-date">{{ comment.date }}</span>
+                                </div>
+                                <div class="comment-content">{{ comment.content }}</div>
+                                <div class="comment-actions">
+                                    <button onclick="likeComment({{ comment.id }})">
+                                        <i class="fas fa-heart"></i> 点赞 ({{ comment.likes }})
+                                    </button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="no-comments">暂无评论，快来发表第一条评论吧！</div>
+                    {% endif %}
+                </div>
+            </div>
         </section>
     </div>
-    <script src="{{ url_for('static', filename='js/detail.js') }}"></script>
+    
+    <script>
+    // 点赞帖子
+    function likePost(postId) {
+        fetch(`/api/posts/${postId}/like`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const likeButton = document.getElementById('like-post');
+                const currentLikes = parseInt(likeButton.textContent.match(/\d+/)[0]) + 1;
+                likeButton.innerHTML = `<i class="fas fa-heart"></i> 点赞 (${currentLikes})`;
+            }
+        })
+        .catch(error => console.error('点赞失败:', error));
+    }
+
+    // 提交评论
+    function submitComment(postId) {
+        const content = document.getElementById('comment-content').value.trim();
+        
+        if (!content) {
+            alert('评论内容不能为空');
+            return;
+        }
+        
+        fetch('/api/comments', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                postId: postId,
+                content: content
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('评论提交失败');
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert('评论发表成功！');
+            document.getElementById('comment-content').value = '';
+            // 刷新页面以显示新评论
+            window.location.reload();
+        })
+        .catch(error => {
+            console.error('评论提交失败:', error);
+            alert('评论提交失败，请重试');
+        });
+    }
+
+    // 点赞评论
+    function likeComment(commentId) {
+        fetch(`/api/comments/${commentId}/like`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // 刷新页面以更新点赞数
+                window.location.reload();
+            }
+        })
+        .catch(error => console.error('点赞评论失败:', error));
+    }
+    </script>
 </div>
 {% endblock %}

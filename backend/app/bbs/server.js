@@ -19,45 +19,6 @@ const db = new sqlite3.Database('./story.db', (err) => {
     }
 });
 
-// 创建表
-function createTables() {
-    db.run(`
-        CREATE TABLE IF NOT EXISTS posts (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT,
-            content TEXT,
-            author TEXT,
-            date TEXT,
-            likes INTEGER DEFAULT 0,
-            views INTEGER DEFAULT 0
-        )
-    `, (err) => {
-        if (err) {
-            console.error("Error creating posts table:", err.message);
-        } else {
-            console.log('Posts table created or already exists.');
-        }
-    });
-
-    db.run(`
-        CREATE TABLE IF NOT EXISTS comments (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            postId INTEGER,
-            content TEXT,
-            author TEXT,
-            date TEXT,
-            likes INTEGER DEFAULT 0,
-            FOREIGN KEY (postId) REFERENCES posts(id)
-        )
-    `, (err) => {
-        if (err) {
-            console.error("Error creating comments table:", err.message);
-        } else {
-            console.log('Comments table created or already exists.');
-        }
-    });
-}
-
 // API 接口
 
 // 获取所有帖子

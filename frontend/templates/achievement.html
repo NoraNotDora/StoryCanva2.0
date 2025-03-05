@@ -1,81 +1,111 @@
 {% extends "base.html" %}
 
-{% block title %}Achievements - StoryCanva{% endblock %}
+{% block title %}成就 - StoryCanva{% endblock %}
 
 {% block content %}
 <div class="container-xxl py-5">
     <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s">
         <h1 class="mb-3">我的成就</h1>
         <h2 class="mb-3">My Achievements</h2>
+        <p>您当前已创作 <span class="badge bg-primary">{{ story_count }}</span> 个故事</p>
     </div>
 
     <div class="container-xxl py-5">
         <div class="container">
+            {% if story_count == 0 %}
+            <div class="alert alert-info text-center">
+                <h4>还没有获得成就，快去创作自己的故事吧！</h4>
+                <a href="{{ url_for('create') }}" class="btn btn-primary mt-3">开始创作</a>
+            </div>
+            {% else %}
             <div class="row g-4">
                 <!-- 成就项列表 -->
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                    <div class="classes-item">
+                {% for achievement in achievements %}
+                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="{{ loop.index * 0.2 }}s">
+                    <div class="classes-item {% if not achievement.unlocked %}achievement-locked{% endif %}">
                         <div class="bg-light rounded-circle w-75 mx-auto p-3">
-                            <img class="img-fluid rounded-circle bg-light p-1" src="{{ url_for('static', filename='picture/故事探险家.png') }}" alt="">
+                            <img class="img-fluid rounded-circle bg-light p-1" 
+                                 src="{{ url_for('static', filename=achievement.image) }}" 
+                                 alt="{{ achievement.name }}">
                         </div>
                         <div class="bg-light rounded p-4 pt-5 mt-n5 text-center">
-                            <a class="d-block h3 mt-3 mb-4" href="">故事探险家</a>
-                            <div class="fs-6">累计创作1个故事</div>
+                            <a class="d-block h3 mt-3 mb-4" href="#">{{ achievement.name }}</a>
+                            <div class="fs-6">{{ achievement.description }}</div>
+                            {% if achievement.unlocked %}
+                            <div class="badge bg-success mt-2">已获得</div>
+                            {% else %}
+                            <div class="badge bg-secondary mt-2">未获得 (需要: {{ achievement.required }})</div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
-
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                    <div class="classes-item">
-                        <div class="bg-light rounded-circle w-75 mx-auto p-3">
-                            <img class="img-fluid rounded-circle bg-light p-1" src="{{ url_for('static', filename='picture/故事小能手.png') }}" alt="">
-                        </div>
-                        <div class="bg-light rounded p-4 pt-5 mt-n5 text-center">
-                            <a class="d-block h3 mt-3 mb-4" href="">故事小能手</a>
-                            <div class="fs-6">累计创作5个故事</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
-                    <div class="classes-item">
-                        <div class="bg-light rounded-circle w-75 mx-auto p-3">
-                            <img class="img-fluid rounded-circle bg-light p-1" src="{{ url_for('static', filename='picture/故事小天才.png') }}" alt="">
-                        </div>
-                        <div class="bg-light rounded p-4 pt-5 mt-n5 text-center">
-                            <a class="d-block h3 mt-3 mb-4" href="">故事小天才</a>
-                            <div class="fs-6">累计创作10个故事</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                    <div class="classes-item">
-                        <div class="bg-light rounded-circle w-75 mx-auto p-3">
-                            <img class="img-fluid rounded-circle bg-light p-1" src="{{ url_for('static', filename='picture/奇趣小作家.png') }}" alt="">
-                        </div>
-                        <div class="bg-light rounded p-4 pt-5 mt-n5 text-center">
-                            <a class="d-block h3 mt-3 mb-4" href="">奇趣小作家</a>
-                            <div class="fs-6">累计创作20个故事</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                    <div class="classes-item">
-                        <div class="bg-light rounded-circle w-75 mx-auto p-3">
-                            <img class="img-fluid rounded-circle bg-light p-1" src="{{ url_for('static', filename='picture/梦幻编织师.png') }}" alt="">
-                        </div>
-                        <div class="bg-light rounded p-4 pt-5 mt-n5 text-center">
-                            <a class="d-block h3 mt-3 mb-4" href="">梦幻编织师</a>
-                            <div class="fs-6">累计创作50个故事</div>
-                        </div>
-                    </div>
-                </div>
+                {% endfor %}
             </div>
+            {% endif %}
         </div>
     </div>
 
+    <div class="achievement-progress mb-5 wow fadeInUp" data-wow-delay="0.1s">
+        <h3 class="text-center mb-3">成就进度</h3>
+        <div class="progress" style="height: 30px;">
+            {% set progress = story_count / 50 * 100 %}
+            {% if progress > 100 %}
+                {% set progress = 100 %}
+            {% endif %}
+            <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                 role="progressbar" 
+                 style="width: {{ progress }}%;" 
+                 aria-valuenow="{{ story_count }}" 
+                 aria-valuemin="0" 
+                 aria-valuemax="50">
+                {{ story_count }}/50
+            </div>
+        </div>
+        <div class="d-flex justify-content-between mt-2">
+            <span>0</span>
+            <span>10</span>
+            <span>20</span>
+            <span>30</span>
+            <span>40</span>
+            <span>50</span>
+        </div>
+    </div>
 
+    {% if story_count > 0 and story_count < 50 %}
+    <div class="next-achievement text-center mb-5 wow fadeInUp" data-wow-delay="0.2s">
+        {% if story_count < 1 %}
+            {% set next_achievement = '故事探险家' %}
+            {% set remaining = 1 - story_count %}
+        {% elif story_count < 5 %}
+            {% set next_achievement = '故事小能手' %}
+            {% set remaining = 5 - story_count %}
+        {% elif story_count < 10 %}
+            {% set next_achievement = '故事小天才' %}
+            {% set remaining = 10 - story_count %}
+        {% elif story_count < 20 %}
+            {% set next_achievement = '奇趣小作家' %}
+            {% set remaining = 20 - story_count %}
+        {% elif story_count < 50 %}
+            {% set next_achievement = '梦幻编织师' %}
+            {% set remaining = 50 - story_count %}
+        {% endif %}
+        
+        <div class="alert alert-info">
+            <h4>距离获得 <strong>{{ next_achievement }}</strong> 成就还需创作 <strong>{{ remaining }}</strong> 个故事</h4>
+            <a href="{{ url_for('create') }}" class="btn btn-primary mt-2">继续创作</a>
+        </div>
+    </div>
+    {% elif story_count >= 50 %}
+    <div class="all-achievements-unlocked text-center mb-5 wow fadeInUp" data-wow-delay="0.2s">
+        <div class="alert alert-success">
+            <h4>恭喜！您已解锁所有成就！</h4>
+            <p>您是真正的故事大师！</p>
+        </div>
+    </div>
+    {% endif %}
 </div>
+{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/achievement.css') }}" rel="stylesheet">
 {% endblock %} 

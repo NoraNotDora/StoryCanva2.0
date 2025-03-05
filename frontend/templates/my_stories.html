@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% block title %}我的故事 - StoryCanva{% endblock %}
+
+{% block content %}
+<div class="container-xxl py-5">
+    <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s">
+        <h1 class="mb-3">我的故事</h1>
+        <p>管理您创作的所有故事</p>
+    </div>
+    
+    <div class="row">
+        <div class="col-12 mb-4">
+            <a href="{{ url_for('create') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> 创作新故事
+            </a>
+        </div>
+        
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0 text-white">我的故事列表</h3>
+                </div>
+                <div class="card-body">
+                    {% if stories %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>标题</th>
+                                        <th>创建时间</th>
+                                        <th>浏览量</th>
+                                        <th>点赞数</th>
+                                        <th>公开状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for story in stories %}
+                                    <tr>
+                                        <td>{{ story.title }}</td>
+                                        <td>{{ story.date }}</td>
+                                        <td>{{ story.views }}</td>
+                                        <td>{{ story.likes }}</td>
+                                        <td>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input public-toggle" 
+                                                       type="checkbox" 
+                                                       id="public-{{ story.id }}" 
+                                                       data-id="{{ story.id }}"
+                                                       {% if story.is_public == 1 %}checked{% endif %}>
+                                                <label class="form-check-label" for="public-{{ story.id }}">
+                                                    {{ '已公开' if story.is_public == 1 else '未公开' }}
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <a href="{{ url_for('serve_detail', id=story.id) }}" class="btn btn-sm btn-info">
+                                                <i class="fas fa-eye"></i> 查看
+                                            </a>
+                                            <a href="{{ url_for('edit_story', story_id=story.id) }}" class="btn btn-sm btn-warning">
+                                                <i class="fas fa-edit"></i> 编辑
+                                            </a>
+                                            <button class="btn btn-sm btn-danger delete-story" data-id="{{ story.id }}">
+                                                <i class="fas fa-trash"></i> 删除
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            您还没有创作任何故事。点击上方的"创作新故事"按钮开始您的创作之旅！
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 处理公开状态切换
+    const publicToggles = document.querySelectorAll('.public-toggle');
+    publicToggles.forEach(toggle => {
+        toggle.addEventListener('change', function() {
+            const postId = this.dataset.id;
+            const isPublic = this.checked ? 1 : 0;
+            const label = this.nextElementSibling;
+            
+            fetch(`/api/posts/${postId}/public`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    is_public: isPublic
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('更新失败');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    label.textContent = isPublic ? '已公开' : '未公开';
+                }
+            })
+            .catch(error => {
+                console.error('更新公开状态失败:', error);
+                alert('更新公开状态失败，请重试！');
+                // 恢复原状态
+                this.checked = !this.checked;
+            });
+        });
+    });
+    
+    // 处理删除故事
+    const deleteButtons = document.querySelectorAll('.delete-story');
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const postId = this.dataset.id;
+            
+            if (confirm('确定要删除这个故事吗？此操作不可撤销！')) {
+                fetch(`/api/posts/${postId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('删除失败');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        alert('故事已成功删除！');
+                        // 刷新页面
+                        window.location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('删除故事失败:', error);
+                    alert('删除故事失败，请重试！');
+                });
+            }
+        });
+    });
+});
+</script>
+{% endblock %} 

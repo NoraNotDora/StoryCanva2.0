@@ -1,0 +1,31 @@
+.achievement-locked {
+    opacity: 0.6;
+    filter: grayscale(70%);
+    transition: all 0.3s ease;
+}
+
+.achievement-locked:hover {
+    opacity: 0.8;
+    filter: grayscale(30%);
+}
+
+.classes-item {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.classes-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.badge {
+    font-size: 0.9rem;
+    padding: 8px 15px;
+    border-radius: 20px;
+}
+
+.badge.bg-primary {
+    font-size: 1.2rem;
+    padding: 5px 15px;
+} 

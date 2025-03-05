@@ -160,6 +160,31 @@ h6,
     }
 }
 
+/* 导航栏图标样式 */
+.navbar-nav .nav-item.nav-link i {
+    margin-right: 5px;
+    font-size: 1.1em;
+}
+
+/* 激活状态的导航项 */
+.navbar-nav .nav-item.nav-link.active {
+    color: #FE5D37 !important;
+    font-weight: 600;
+}
+
+/* 导航项悬停效果 */
+.navbar-nav .nav-item.nav-link:hover {
+    color: #FE5D37 !important;
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+}
+
+/* 导航项图标悬停效果 */
+.navbar-nav .nav-item.nav-link:hover i {
+    transform: scale(1.2);
+    transition: all 0.3s ease;
+}
+
 
 /*** Header ***/
 .header-carousel::before,

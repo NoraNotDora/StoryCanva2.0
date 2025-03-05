@@ -24,47 +24,21 @@
     <div class="container-fluid bg-white p-0">
         <!-- 导航栏 -->
         <nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top px-4 px-lg-5 py-lg-0" style="top: -100px;">
-            <a href="/" class="navbar-brand">
+            <a href="#" class="navbar-brand">
                 <h1 class="m-0 text-primary"><i class="fa fa-book-reader me-3"></i>StoryCanva</h1>
             </a>
             <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
-                <div class="navbar-nav ms-auto py-0">
-                    <a href="/" class="nav-item nav-link {% if request.path == '/' %}active{% endif %}">
-                        <i class="fas fa-home"></i> 首页
-                    </a>
-                    <a href="/create" class="nav-item nav-link {% if request.path == '/create' %}active{% endif %}">
-                        <i class="fas fa-pen-fancy"></i> 创作
-                    </a>
-                    <a href="/achievement" class="nav-item nav-link {% if request.path == '/achievement' %}active{% endif %}">
-                        <i class="fas fa-trophy"></i> 成就
-                    </a>
-                    <a href="/community" class="nav-item nav-link {% if request.path == '/community' %}active{% endif %}">
-                        <i class="fas fa-users"></i> 社区
-                    </a>
-                    <a href="{{ url_for('my_stories') }}" class="nav-item nav-link {% if request.path == '/my-stories' %}active{% endif %}">
-                        <i class="fas fa-book"></i> 我的故事
-                    </a>
+                <div class="navbar-nav mx-auto">
+                    <a href="{{ url_for('index') }}" class="nav-item nav-link">Home</a>
+                    <a href="{{ url_for('create') }}" class="nav-item nav-link">Create</a>
+                    <a href="{{ url_for('achievement') }}" class="nav-item nav-link">Achievements</a>
+                    <a href="{{ url_for('community') }}" class="nav-item nav-link">Community</a>
                 </div>
-                <div class="navbar-nav ms-auto py-0">
-                    {% if session.user_id %}
-                        <a href="{{ url_for('current_user_profile') }}" class="nav-item nav-link {% if request.path == '/profile' %}active{% endif %}">
-                            <i class="fas fa-user"></i> 个人主页
-                        </a>
-                        <a href="{{ url_for('auth_bp.logout') }}" class="nav-item nav-link">
-                            <i class="fas fa-sign-out-alt"></i> 退出登录
-                        </a>
-                    {% else %}
-                        <a href="{{ url_for('login') }}" class="nav-item nav-link {% if request.path == '/login' %}active{% endif %}">
-                            <i class="fas fa-sign-in-alt"></i> 登录
-                        </a>
-                        <a href="{{ url_for('auth_bp.register') }}" class="nav-item nav-link {% if request.path == '/register' %}active{% endif %}">
-                            <i class="fas fa-user-plus"></i> 注册
-                        </a>
-                    {% endif %}
-                </div>
+                <a href="{{ url_for('login') }}" class="btn btn-primary rounded-pill px-3 d-none d-lg-block">Login<i
+                        class="fa fa-arrow-right ms-3"></i></a>
             </div>
         </nav>
 
