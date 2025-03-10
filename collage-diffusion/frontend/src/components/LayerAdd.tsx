@@ -28,6 +28,8 @@ import { JoyrideState } from "./CollageEditor";
 
 type DBLayer = {
   imgSrc: string;
+  id?: string;
+  uploadTime?: string;
 };
 
 const dbLayers = gallery_db as DBLayer[];
@@ -188,15 +190,53 @@ export default function LayerGallery({
     imgUrl: string;
   } | null>(null);
 
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string>("");
+
   async function uploadImage(file: File) {
-    const formData = new FormData();
-    formData.append("file", file);
-    const response = await fetch(webserverAddress + "/upload_image", {
-      method: "POST",
-      body: formData,
-    });
-    const json = await response.json();
-    return json.url;
+    try {
+      setIsUploading(true);
+      setUploadError("");
+  
+      // 验证文件类型
+      const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      if (!validTypes.includes(file.type)) {
+        throw new Error('不支持的文件类型。请上传 JPG、PNG 或 GIF 格式的图片。');
+      }
+  
+      // 验证文件大小（例如：限制为 5MB）
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (file.size > maxSize) {
+        throw new Error('文件太大。请上传小于 5MB 的图片。');
+      }
+  
+      // 生成唯一的文件名
+      const fileName = `${Date.now()}_${file.name}`;
+  
+      // 将文件存储在本地
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const imageData = reader.result as string;
+  
+        // 将图片路径保存到 gallery_db.ts
+        const newImageEntry = {
+          imgSrc: imageData
+        };
+  
+        // 更新 gallery_db.ts
+        import('../gallery_db').then((gallery_db) => {
+          gallery_db.default.push(newImageEntry);
+        });
+      };
+  
+      return fileName; // 返回文件名或其他标识符
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : '上传失败');
+      throw error;
+    } finally {
+      setIsUploading(false);
+    }
   }
 
   return (
@@ -223,7 +263,7 @@ export default function LayerGallery({
         leftIcon={<FiPlus />}
         size="sm"
       >
-        Add Layer
+        添加图层
       </Button>
       <Modal
         scrollBehavior="outside"
@@ -260,29 +300,48 @@ export default function LayerGallery({
             </Box>
 
             <Divider />
-            <Text size="3xl" fontWeight={"bold"} py={2}>
-              Upload from Computer
-            </Text>
-            <Text size="2xl" py={2}>
-              Upload an image (PNG or JPG) from your computer. Images with
-              formats such as .tiff or .webp are not supported.
-            </Text>
-            <Input
-              float={"right"}
-              py={2}
-              alignSelf="flex-end"
-              variant="unstyled"
-              color="white"
-              type="file"
-              onChange={async (event) => {
-                const files = event.target.files;
-                if (!files) return;
-                const file = files[0];
-                const url = await uploadImage(file);
-                setSelectedImage({ imgUrl: url });
-                onAddOpen();
-              }}
-            />
+            <Box p={4}>
+              <Text size="3xl" fontWeight="bold" mb={2}>
+                从电脑上传
+              </Text>
+              <Text mb={4}>
+                支持上传 PNG、JPG 或 GIF 格式的图片（最大 5MB）
+              </Text>
+              
+              {uploadError && (
+                <Alert status="error" mb={4}>
+                  <AlertIcon />
+                  <AlertDescription>{uploadError}</AlertDescription>
+                </Alert>
+              )}
+
+              <Flex direction="column" align="stretch">
+                <Input
+                  type="file"
+                  accept="image/png,image/jpeg,image/gif"
+                  onChange={async (event) => {
+                    const files = event.target.files;
+                    if (!files || !files[0]) return;
+                    
+                    try {
+                      const url = await uploadImage(files[0]);
+                      setSelectedImage({ imgUrl: url });
+                      onAddOpen();
+                    } catch (error) {
+                      console.error('上传失败:', error);
+                    }
+                  }}
+                  isDisabled={isUploading}
+                />
+                
+                {isUploading && (
+                  <Alert status="info" mt={2}>
+                    <AlertIcon />
+                    <AlertDescription>正在上传图片，请稍候...</AlertDescription>
+                  </Alert>
+                )}
+              </Flex>
+            </Box>
           </ModalBody>
         </ModalContent>
       </Modal>

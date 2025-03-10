@@ -180,7 +180,7 @@ export default function CollageDispatcher({
   return (
     <Box>
       <Button onClick={startJob} isLoading={disabled} borderRadius="full">
-        Generate images
+        生成故事拼贴画
       </Button>
       {badParams && (
         <Alert status="error">

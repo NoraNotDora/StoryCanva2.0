@@ -382,6 +382,19 @@ class Post:
             print(f"更新帖子时出错: {str(e)}")
             return False
 
+    @staticmethod
+    def update_image(post_id, image_path):
+        """更新帖子的图片"""
+        try:
+            db.execute(
+                "UPDATE posts SET image_path = ? WHERE id = ?",
+                (image_path, post_id)
+            )
+            return True
+        except Exception as e:
+            print(f"更新图片时出错: {str(e)}")
+            return False
+
 class Comment:
     @staticmethod
     def get_by_post_id(post_id):

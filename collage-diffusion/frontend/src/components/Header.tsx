@@ -25,7 +25,7 @@ export default function Header({ setJoyrideState, run }: HeaderProps) {
         as="b"
         onClick={() => navigate("/")}
       >
-        Collage Diffusion
+        故事画板
       </Link>
       <Switch
         colorScheme="green"

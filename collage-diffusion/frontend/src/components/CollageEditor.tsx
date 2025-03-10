@@ -635,7 +635,7 @@ export function CollageEditor() {
                     }}
                     mr={4}
                   >
-                    New Collage
+                    新的拼贴画
                   </Button>
                   <Button
                     size="sm"
@@ -646,7 +646,7 @@ export function CollageEditor() {
                     }}
                     variant="secondary"
                   >
-                    Duplicate Collage
+                    复制拼贴画
                   </Button>
                 </Box>
               </Flex>
@@ -669,9 +669,7 @@ export function CollageEditor() {
               >
                 {selectedLayer === null ? (
                   <Text>
-                    {" "}
-                    No layer selected. Click a layer's edit button to see layer
-                    parameters.{" "}
+                    你还没有选中任何魔法图层哦～快到画板上选中你要用的图层吧~
                   </Text>
                 ) : (
                   <LayerControl

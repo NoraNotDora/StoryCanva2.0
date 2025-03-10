@@ -1,4 +1,4 @@
-from flask import Flask, render_template, flash, redirect, url_for, request, session, current_app
+from flask import Flask, render_template, flash, redirect, url_for, request, session, current_app, jsonify
 from flask_cors import CORS
 import os
 from .models import db, init_db, User, Comment, Post
@@ -389,5 +389,42 @@ def create_app():
     def detail_redirect(id):
         """重定向到详情页面"""
         return redirect(url_for('serve_detail', id=id))
+
+    @app.route('/api/upload', methods=['POST'])
+    @login_required
+    def upload_image():
+        try:
+            if 'image' not in request.files:
+                return jsonify({'error': '没有上传文件'}), 400
+            
+            image_file = request.files['image']
+            if not image_file or not allowed_file(image_file.filename):
+                return jsonify({'error': '不支持的文件类型'}), 400
+            
+            # 生成安全的文件名
+            filename = secure_filename(image_file.filename)
+            # 生成唯一文件名
+            user_id = session.get('user_id')
+            unique_filename = f"{user_id}_{int(datetime.now().timestamp())}_{filename}"
+            
+            # 确保上传目录存在
+            upload_folder = os.path.join(current_app.static_folder, 'elements')
+            os.makedirs(upload_folder, exist_ok=True)
+            
+            # 保存文件
+            file_path = os.path.join(upload_folder, unique_filename)
+            image_file.save(file_path)
+            
+            # 返回相对路径
+            image_path = f"elements/{unique_filename}"
+            
+            return jsonify({
+                'success': True,
+                'path': image_path
+            }), 200
+        
+        except Exception as e:
+            print(f"上传图片时出错: {str(e)}")
+            return jsonify({'error': f'服务器错误: {str(e)}'}), 500
 
     return app
