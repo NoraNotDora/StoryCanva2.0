@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const label = document.createElement('div');
         label.classList.add('message-label');
-        label.textContent = isUser ? '用户' : '助手';
+        label.textContent = isUser ? '我' : 'bot';
         
         const messageElement = document.createElement('div');
         messageElement.classList.add('chat-message', isUser ? 'user-message' : 'system-message');
@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const label = document.createElement('div');
         label.classList.add('message-label');
-        label.textContent = '助手';
+        label.textContent = 'bot';
         
         const messageElement = document.createElement('div');
         messageElement.classList.add('chat-message', 'system-message');
@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const label = document.createElement('div');
         label.classList.add('message-label');
-        label.textContent = '助手';
+        label.textContent = 'bot';
         
         const messageElement = document.createElement('div');
         messageElement.classList.add('chat-message', 'system-message');
@@ -158,6 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 更新流式响应内容
     function updateStreamResponse(messageElement, content) {
         console.log("更新流式响应:", content.substring(0, 50) + (content.length > 50 ? "..." : ""));
+        console.log("消息元素:", messageElement);
         
         // 更新历史记录中最后一条消息的内容
         if (chatHistory.length > 0) {
@@ -166,6 +167,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // 保留复制按钮
         const copyButton = messageElement.querySelector('.copy-button');
+        console.log("复制按钮:", copyButton);
         
         // 完全清空元素内容
         messageElement.innerHTML = '';
@@ -176,36 +178,9 @@ document.addEventListener('DOMContentLoaded', function() {
             copyButton.style.display = 'none'; // 暂时隐藏，等内容加载完再显示
         }
         
-        // 检查代码块并应用语法高亮
-        const codeRegex = /```(\w+)?\s*([\s\S]*?)```/g;
-        let lastIndex = 0;
-        let match;
-        
-        while ((match = codeRegex.exec(content)) !== null) {
-            // 添加代码块前的文本
-            if (match.index > lastIndex) {
-                const textNode = document.createTextNode(content.slice(lastIndex, match.index));
-                messageElement.appendChild(textNode);
-            }
-            
-            // 创建代码块
-            const pre = document.createElement('pre');
-            const code = document.createElement('code');
-            if (match[1]) {
-                code.className = `language-${match[1]}`;
-            }
-            code.textContent = match[2].trim();
-            pre.appendChild(code);
-            messageElement.appendChild(pre);
-            
-            lastIndex = match.index + match[0].length;
-        }
-        
-        // 添加最后一个代码块后的剩余文本
-        if (lastIndex < content.length) {
-            const textNode = document.createTextNode(content.slice(lastIndex));
-            messageElement.appendChild(textNode);
-        }
+        // 添加纯文本内容（不处理代码块）
+        const textNode = document.createTextNode(content);
+        messageElement.appendChild(textNode);
         
         // 确保复制按钮在最前面
         if (copyButton) {
@@ -222,12 +197,61 @@ document.addEventListener('DOMContentLoaded', function() {
             };
         }
         
-        // 应用语法高亮
-        messageElement.querySelectorAll('pre code').forEach((block) => {
-            hljs.highlightBlock(block);
-        });
-        
         chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    // 在 readStream 函数中添加更多调试信息
+    function readStream(reader, decoder, messageElement, copyButton) {
+        let responseText = '';
+        
+        function processChunk() {
+            return reader.read().then(({ done, value }) => {
+                if (done) {
+                    console.log("流结束，最终响应:", responseText.substring(0, 50) + (responseText.length > 50 ? "..." : ""));
+                    // 流结束，显示复制按钮
+                    copyButton.style.display = 'block';
+                    return;
+                }
+                
+                // 解码并添加到响应文本
+                const chunk = decoder.decode(value, { stream: true });
+                console.log("收到数据块:", chunk);
+                
+                try {
+                    // 检查是否是JSON格式的错误消息
+                    const jsonData = JSON.parse(chunk);
+                    console.log("解析为JSON:", jsonData);
+                    if (jsonData.error) {
+                        responseText = jsonData.error;
+                        updateStreamResponse(messageElement, responseText);
+                        copyButton.style.display = 'block';
+                        return;
+                    }
+                    // 如果是其他类型的JSON数据，可能需要特殊处理
+                    if (jsonData.content) {
+                        responseText += jsonData.content;
+                    } else {
+                        responseText += JSON.stringify(jsonData);
+                    }
+                } catch (e) {
+                    // 不是JSON，继续正常处理
+                    console.log("非JSON数据，直接添加");
+                    responseText += chunk;
+                }
+                
+                // 更新UI
+                updateStreamResponse(messageElement, responseText);
+                
+                // 继续读取流
+                return processChunk();
+            }).catch(error => {
+                console.error("读取流时出错:", error);
+                updateStreamResponse(messageElement, responseText + "\n\n[读取数据时出错]");
+                copyButton.style.display = 'block';
+            });
+        }
+        
+        return processChunk();
     }
 
     clearInputButton.addEventListener('click', function() {
@@ -295,55 +319,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder();
-                let responseText = '';
                 
-                function readStream() {
-                    return reader.read().then(({ done, value }) => {
-                        if (done) {
-                            console.log("流结束，最终响应:", responseText.substring(0, 50) + (responseText.length > 50 ? "..." : ""));
-                            // 流结束，显示复制按钮
-                            copyButton.style.display = 'block';
-                            return;
-                        }
-                        
-                        // 解码并添加到响应文本
-                        const chunk = decoder.decode(value, { stream: true });
-                        console.log("收到数据块:", chunk.substring(0, 50) + (chunk.length > 50 ? "..." : ""));
-                        
-                        try {
-                            // 检查是否是JSON格式的错误消息
-                            const jsonData = JSON.parse(chunk);
-                            console.log("解析为JSON:", jsonData);
-                            if (jsonData.error) {
-                                responseText = jsonData.error;
-                                updateStreamResponse(messageElement, responseText);
-                                copyButton.style.display = 'block';
-                                return;
-                            }
-                            // 如果是其他类型的JSON数据，可能需要特殊处理
-                            if (jsonData.content) {
-                                responseText += jsonData.content;
-                            } else {
-                                responseText += JSON.stringify(jsonData);
-                            }
-                        } catch (e) {
-                            // 不是JSON，继续正常处理
-                            responseText += chunk;
-                        }
-                        
-                        // 更新UI
-                        updateStreamResponse(messageElement, responseText);
-                        
-                        // 继续读取流
-                        return readStream();
-                    }).catch(error => {
-                        console.error("读取流时出错:", error);
-                        updateStreamResponse(messageElement, responseText + "\n\n[读取数据时出错]");
-                        copyButton.style.display = 'block';
-                    });
-                }
-                
-                return readStream();
+                return readStream(reader, decoder, messageElement, copyButton);
             })
             .catch(error => {
                 console.error('获取回复失败:', error);
@@ -378,18 +355,5 @@ document.addEventListener('DOMContentLoaded', function() {
     if (chatContainer && chatContainer.children.length === 0) {
         addMessage("您好！我是 StoryCanva 的 AI 助手，可以帮您创作故事、提供写作建议或回答问题。请告诉我您需要什么帮助？", false);
     }
-    
-    // 添加暗黑模式切换功能
-    const darkModeToggle = document.createElement('button');
-    darkModeToggle.id = 'darkModeToggle';
-    darkModeToggle.classList.add('btn', 'btn-outline-light', 'position-absolute', 'top-0', 'end-0', 'm-2');
-    darkModeToggle.textContent = '🌙';
-    darkModeToggle.setAttribute('aria-label', 'Toggle dark mode');
-    
-    document.querySelector('.navbar').appendChild(darkModeToggle);
-    
-    darkModeToggle.addEventListener('click', function() {
-        document.body.classList.toggle('dark-mode');
-        this.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
-    });
+
 });

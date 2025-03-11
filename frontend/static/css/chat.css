@@ -4,10 +4,6 @@ body {
     height: 100vh;
     transition: background-color 0.3s, color 0.3s;
 }
-.dark-mode {
-    background-color: #333;
-    color: #f1f1f1;
-}
 .chat-container {
     flex-grow: 1;
     overflow-y: auto;
@@ -43,18 +39,10 @@ body {
     background-color: #f1f3f5;
     color: black;
 }
-.dark-mode .system-message {
-    background-color: #555;
-    color: #f1f1f1;
-}
 .input-container {
     padding: 1rem;
     background-color: #f8f9fa;
     border-top: 1px solid #dee2e6;
-}
-.dark-mode .input-container {
-    background-color: #444;
-    border-top-color: #666;
 }
 .chat-input {
     resize: none;
@@ -84,9 +72,6 @@ body {
 .char-count {
     font-size: 0.8em;
     color: #6c757d;
-}
-.dark-mode .char-count {
-    color: #adb5bd;
 }
 .thinking {
     display: inline-block;
@@ -124,32 +109,6 @@ pre {
 }
 code {
     font-family: 'Courier New', Courier, monospace;
-}
-.dark-mode {
-    background-color: #1a1a1a;
-    color: #f0f0f0;
-}
-.dark-mode .chat-container {
-    background-color: #2a2a2a;
-}
-.dark-mode .user-message {
-    background-color: #3a3a3a;
-}
-.dark-mode .system-message {
-    background-color: #2a2a2a;
-    border: 1px solid #3a3a3a;
-}
-.dark-mode pre {
-    background-color: #333;
-    color: #f0f0f0;
-}
-.dark-mode .input-container {
-    background-color: #2a2a2a;
-}
-.dark-mode .chat-input {
-    background-color: #3a3a3a;
-    color: #f0f0f0;
-    border-color: #444;
 }
 .notification-bar {
     position: fixed;
