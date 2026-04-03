@@ -287,9 +287,12 @@ class Scheduler:
             self.lock.release()
 
 
-def run_scheduler(pq: PriorityQueue, directives: dict, timer_epoch: float, logdir: str):
-    scheduler = Scheduler(pq, directives, logdir, timer_epoch)
-    scheduler.start()
+def run_scheduler(priority_queue, directives, sleep_time, logdir):
+    # 不要在这里初始化 Ray，而是使用已有的实例
+    # ray.init() <- 删除这行
+    
+    # 其余代码保持不变
+    # ...
 
 
 # For testing

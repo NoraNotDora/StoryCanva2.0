@@ -174,11 +174,18 @@ async def startup_event():
     """
     parser = argparse.ArgumentParser(description="Start server.")
     parser.add_argument("--backend", default="local")
+    parser.add_argument("--ray-address", default=None, help="Ray cluster address")
     args = parser.parse_args()
 
+    # 初始化 Ray（只初始化一次）
+    if args.ray_address:
+        ray.init(address=args.ray_address, ignore_reinit_error=True)
+    else:
+        # 如果没有指定地址，使用本地模式并分配资源
+        ray.init(num_cpus=2, num_gpus=1, ignore_reinit_error=True)
+    
+    # 使用同一个 Ray 实例
     # Spawn scheduler process
-    # NOTE: this creates a separate ray instance...
-    # moving this after serve_diffusion_model() causes ray task to deadlock...
     scheduler_process = Process(
         target=run_scheduler,
         args=(priority_queue, directives, 0.02, LOGDIR),
@@ -194,7 +201,7 @@ async def startup_event():
         shutil.rmtree(image_dir)
         os.mkdir(image_dir)
 
-        # # Start ray service that hosts diffusion
+        # Start ray service that hosts diffusion
         from serve_diffusion import serve_diffusion_model
 
         (diffusion_handle, polling_handle) = serve_diffusion_model(

@@ -5,10 +5,10 @@
 {% block content %}
 <div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="text-center">编辑个人资料</h3>
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="text-center mb-0">编辑个人资料</h3>
                 </div>
                 <div class="card-body">
                     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -19,19 +19,211 @@
                         {% endif %}
                     {% endwith %}
                     
-                    <form method="POST" action="{{ url_for('edit_profile') }}">
-                        <div class="form-group mb-3">
-                            <label for="username">用户名</label>
-                            <input type="text" class="form-control" id="username" value="{{ user.username }}" disabled>
-                            <small class="form-text text-muted">用户名不能修改</small>
+                    <form method="POST" enctype="multipart/form-data">
+                        <!-- 头像上传 -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">头像设置</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-md-4 text-center">
+                                        <div class="avatar-wrapper position-relative d-inline-block">
+                                            <img id="avatar-preview" 
+                                                 src="{{ url_for('static', filename=user.avatar if user.avatar else 'picture/default_avatar.png') }}" 
+                                                 class="rounded-circle border shadow-sm" 
+                                                 style="width: 150px; height: 150px; object-fit: cover;">
+                                            <div class="avatar-overlay position-absolute w-100 h-100 d-flex align-items-center justify-content-center rounded-circle">
+                                                <i class="fas fa-camera fa-2x text-white"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="avatar-info">
+                                            <h6 class="mb-3">更换头像</h6>
+                                            <p class="text-muted small mb-3">支持 JPG、PNG、GIF 格式的图片，最大支持 2MB</p>
+                                            <div class="custom-file">
+                                                <input type="file" class="custom-file-input" id="avatar" name="avatar" accept="image/*">
+                                                <label class="custom-file-label" for="avatar">选择新头像</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="form-group mb-3">
-                            <label for="email">电子邮件</label>
-                            <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+
+                        <!-- 基本信息 -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">基本信息</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="email">电子邮件</label>
+                                    <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="nickname">昵称</label>
+                                    <input type="text" class="form-control" id="nickname" name="nickname" value="{{ user.nickname }}" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="age">年龄</label>
+                                    <select class="form-control" id="age" name="age" required>
+                                        {% for i in range(5, 10) %}
+                                        <option value="{{ i }}" {% if user.age == i %}selected{% endif %}>{{ i }}岁</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>性别</label>
+                                    <div class="custom-control custom-radio">
+                                        <input type="radio" id="gender-boy" name="gender" value="boy" class="custom-control-input" 
+                                               {% if user.gender == 'boy' %}checked{% endif %} required>
+                                        <label class="custom-control-label" for="gender-boy">
+                                            <i class="fas fa-mars text-primary"></i> 男孩
+                                        </label>
+                                    </div>
+                                    <div class="custom-control custom-radio">
+                                        <input type="radio" id="gender-girl" name="gender" value="girl" class="custom-control-input"
+                                               {% if user.gender == 'girl' %}checked{% endif %}>
+                                        <label class="custom-control-label" for="gender-girl">
+                                            <i class="fas fa-venus text-danger"></i> 女孩
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">保存修改</button>
-                            <a href="{{ url_for('profile', username=user.username) }}" class="btn btn-outline-secondary">返回个人主页</a>
+
+                        <!-- 喜好信息 -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">个性化信息</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label>喜欢的颜色</label>
+                                    <div class="row">
+                                        {% for color, bg_color in [
+                                            ('红色', 'bg-danger'),
+                                            ('蓝色', 'bg-primary'),
+                                            ('绿色', 'bg-success'),
+                                            ('黄色', 'bg-warning'),
+                                            ('粉色', 'bg-pink'),
+                                            ('紫色', 'bg-purple'),
+                                            ('橙色', 'bg-orange'),
+                                            ('白色', 'bg-light')
+                                        ] %}
+                                        <div class="col-6 col-md-3 mb-2">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" 
+                                                       id="color-{{ loop.index }}" name="favorite_colors" 
+                                                       value="{{ color }}"
+                                                       {% if color in user.favorite_colors %}checked{% endif %}>
+                                                <label class="custom-control-label" for="color-{{ loop.index }}">
+                                                    <span class="badge {{ bg_color }} text-white">{{ color }}</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>喜欢的故事类型</label>
+                                    <div class="row">
+                                        {% for story_type, icon in [
+                                            ('冒险', 'fa-compass'),
+                                            ('童话', 'fa-magic'),
+                                            ('科幻', 'fa-rocket'),
+                                            ('动物', 'fa-paw'),
+                                            ('神话', 'fa-dragon'),
+                                            ('历史', 'fa-landmark'),
+                                            ('搞笑', 'fa-laugh'),
+                                            ('生活', 'fa-home')
+                                        ] %}
+                                        <div class="col-6 col-md-3 mb-2">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" 
+                                                       id="story-{{ loop.index }}" name="story_preferences" 
+                                                       value="{{ story_type }}"
+                                                       {% if story_type in user.story_preferences %}checked{% endif %}>
+                                                <label class="custom-control-label" for="story-{{ loop.index }}">
+                                                    <i class="fas {{ icon }} mr-1"></i> {{ story_type }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>喜欢的角色</label>
+                                    <div class="row">
+                                        {% for character, icon in [
+                                            ('英雄', 'fa-shield-alt'),
+                                            ('公主', 'fa-crown'),
+                                            ('魔法师', 'fa-hat-wizard'),
+                                            ('探险家', 'fa-map'),
+                                            ('科学家', 'fa-flask'),
+                                            ('小动物', 'fa-cat'),
+                                            ('超人', 'fa-mask'),
+                                            ('机器人', 'fa-robot')
+                                        ] %}
+                                        <div class="col-6 col-md-3 mb-2">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" 
+                                                       id="character-{{ loop.index }}" name="favorite_characters" 
+                                                       value="{{ character }}"
+                                                       {% if character in user.favorite_characters %}checked{% endif %}>
+                                                <label class="custom-control-label" for="character-{{ loop.index }}">
+                                                    <i class="fas {{ icon }} mr-1"></i> {{ character }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>害怕的事物</label>
+                                    <div class="row">
+                                        {% for fear, icon in [
+                                            ('黑暗', 'fa-moon'),
+                                            ('高处', 'fa-mountain'),
+                                            ('雷声', 'fa-bolt'),
+                                            ('怪物', 'fa-ghost'),
+                                            ('孤独', 'fa-user-slash'),
+                                            ('陌生人', 'fa-user-secret'),
+                                            ('虫子', 'fa-bug'),
+                                            ('鬼故事', 'fa-book-dead')
+                                        ] %}
+                                        <div class="col-6 col-md-3 mb-2">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" 
+                                                       id="fear-{{ loop.index }}" name="fear_list" 
+                                                       value="{{ fear }}"
+                                                       {% if fear in user.fear_list %}checked{% endif %}>
+                                                <label class="custom-control-label" for="fear-{{ loop.index }}">
+                                                    <i class="fas {{ icon }} mr-1"></i> {{ fear }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="fas fa-save mr-2"></i> 保存更改
+                            </button>
+                            <a href="{{ url_for('current_user_profile') }}" class="btn btn-secondary btn-lg ml-2 px-5">
+                                <i class="fas fa-arrow-left mr-2"></i> 返回
+                            </a>
                         </div>
                     </form>
                 </div>
@@ -39,4 +231,98 @@
         </div>
     </div>
 </div>
+
+<style>
+.bg-pink {
+    background-color: #ff69b4 !important;
+}
+.bg-purple {
+    background-color: #6f42c1 !important;
+}
+.bg-orange {
+    background-color: #fd7e14 !important;
+}
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+.card-header {
+    border-bottom: 2px solid rgba(0,0,0,0.125);
+}
+.custom-control-input:checked ~ .custom-control-label::before {
+    border-color: #007bff;
+    background-color: #007bff;
+}
+.custom-file-label {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+.btn {
+    border-radius: 25px;
+}
+
+.avatar-wrapper {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.avatar-overlay {
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.avatar-wrapper:hover .avatar-overlay {
+    opacity: 1;
+}
+
+.avatar-info {
+    padding-left: 20px;
+}
+
+@media (max-width: 767.98px) {
+    .avatar-info {
+        padding-left: 0;
+        margin-top: 20px;
+        text-align: center;
+    }
+}
+
+.custom-file {
+    max-width: 300px;
+}
+
+@media (max-width: 767.98px) {
+    .custom-file {
+        max-width: 100%;
+        margin: 0 auto;
+    }
+}
+</style>
+
+<script>
+document.getElementById('avatar').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('avatar-preview').src = e.target.result;
+        }
+        reader.readAsDataURL(file);
+        document.querySelector('.custom-file-label').textContent = file.name;
+    }
+});
+
+// 点击头像也能触发文件选择
+document.querySelector('.avatar-wrapper').addEventListener('click', function() {
+    document.getElementById('avatar').click();
+});
+</script>
 {% endblock %} 

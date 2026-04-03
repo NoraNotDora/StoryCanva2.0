@@ -1,12 +1,17 @@
-from flask import Flask, render_template, flash, redirect, url_for, request, session, current_app, jsonify
+from flask import Flask, render_template, flash, redirect, url_for, request, session, current_app, jsonify, Blueprint
 from flask_cors import CORS
 import os
-from .models import db, init_db, User, Comment, Post
+from .models import db, init_db, User, Comment, Post, get_db_connection
 from .controllers import blueprints
 from .utils import login_required, allowed_file
 import re
 from werkzeug.utils import secure_filename
 from datetime import datetime
+import json
+import uuid
+from diffusers import StableDiffusionPipeline
+import torch
+from PIL import Image
 
 def create_app():
     app = Flask(__name__, 
@@ -242,35 +247,97 @@ def create_app():
             user_comments=user_comments
         )
 
-    @app.route('/profile/edit', methods=['GET', 'POST'])
+    @app.route('/edit_profile', methods=['GET', 'POST'])
     @login_required
     def edit_profile():
         if request.method == 'POST':
-            # 获取表单数据
             email = request.form.get('email')
+            nickname = request.form.get('nickname')
+            age = request.form.get('age')
+            gender = request.form.get('gender')
+            
+            # 获取多选值并转换为JSON
+            favorite_colors = request.form.getlist('favorite_colors')
+            story_preferences = request.form.getlist('story_preferences')
+            favorite_characters = request.form.getlist('favorite_characters')
+            fear_list = request.form.getlist('fear_list')
             
             # 验证邮箱格式
-            if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
-                flash('请输入有效的电子邮件地址', 'error')
+            if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+                flash('邮箱格式不正确', 'error')
                 return redirect(url_for('edit_profile'))
             
-            # 检查邮箱是否已被其他用户使用
+            # 检查邮箱是否被其他用户使用
             existing_user = User.get_by_email(email)
             if existing_user and existing_user['id'] != session['user_id']:
-                flash('该电子邮件已被其他用户使用', 'error')
+                flash('该邮箱已被使用', 'error')
                 return redirect(url_for('edit_profile'))
             
-            # 更新用户信息
+            # 处理头像上传
+            avatar_path = None
+            if 'avatar' in request.files:
+                file = request.files['avatar']
+                if file and file.filename:
+                    try:
+                        # 检查文件类型
+                        if not allowed_file(file.filename, {'png', 'jpg', 'jpeg', 'gif'}):
+                            flash('不支持的文件类型，请上传 JPG、PNG 或 GIF 格式的图片', 'error')
+                            return redirect(url_for('edit_profile'))
+                        
+                        # 检查文件大小（2MB限制）
+                        if len(file.read()) > 2 * 1024 * 1024:  # 2MB in bytes
+                            flash('文件大小超过2MB限制', 'error')
+                            return redirect(url_for('edit_profile'))
+                        file.seek(0)  # 重置文件指针
+                        
+                        # 生成安全的文件名
+                        filename = secure_filename(file.filename)
+                        # 确保文件名是唯一的
+                        ext = os.path.splitext(filename)[1]
+                        unique_filename = f"{uuid.uuid4()}{ext}"
+                        # 保存文件
+                        avatar_path = os.path.join('uploads', unique_filename)
+                        upload_path = os.path.join(current_app.static_folder, avatar_path)
+                        
+                        # 确保上传目录存在
+                        os.makedirs(os.path.dirname(upload_path), exist_ok=True)
+                        file.save(upload_path)
+                        
+                    except Exception as e:
+                        flash(f'头像上传失败：{str(e)}', 'error')
+                        print(f"Error uploading avatar: {e}")
+                        return redirect(url_for('edit_profile'))
+            
             try:
-                # 这里需要添加一个更新用户信息的方法
-                # User.update_email(session['user_id'], email)
-                flash('个人资料已更新', 'success')
-                return redirect(url_for('profile', username=session['username']))
+                # 使用User模型的方法更新用户信息
+                user_data = {
+                    'email': email,
+                    'nickname': nickname,
+                    'age': age,
+                    'gender': gender,
+                    'favorite_colors': favorite_colors,
+                    'story_preferences': story_preferences,
+                    'favorite_characters': favorite_characters,
+                    'fear_list': fear_list
+                }
+                
+                if avatar_path:
+                    user_data['avatar'] = avatar_path
+                
+                success = User.update_profile(session['user_id'], user_data)
+                
+                if success:
+                    flash('个人资料更新成功！', 'success')
+                else:
+                    flash('更新失败，请稍后重试', 'error')
+                
             except Exception as e:
-                flash(f'更新失败: {str(e)}', 'error')
-                return redirect(url_for('edit_profile'))
+                flash('更新失败，请稍后重试', 'error')
+                print(f"Error updating profile: {e}")
+            
+            return redirect(url_for('current_user_profile'))
         
-        # GET请求，显示编辑表单
+        # GET 请求显示编辑表单
         user = User.get_by_id(session['user_id'])
         return render_template('edit_profile.html', user=user)
 
@@ -426,5 +493,76 @@ def create_app():
         except Exception as e:
             print(f"上传图片时出错: {str(e)}")
             return jsonify({'error': f'服务器错误: {str(e)}'}), 500
+
+    # 定义图像保存的目录
+    # 确保这个目录存在，并且Flask应用可以访问和提供静态文件
+    # 我们假设在 backend/app 目录下创建 static/generated_images
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    STATIC_DIR = os.path.join(BASE_DIR, 'static')
+    GENERATED_IMAGES_DIR = os.path.join(STATIC_DIR, 'generated_images')
+
+    # 如果目录不存在，则创建
+    os.makedirs(GENERATED_IMAGES_DIR, exist_ok=True)
+    os.makedirs(STATIC_DIR, exist_ok=True) # 确保static目录也存在
+
+    # 加载图像生成模型
+    # 注意：这是一个耗时操作，模型只加载一次
+    # 尝试使用GPU，如果不可用则使用CPU
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    print(f"Using device: {device} for image generation")
+
+    try:
+        pipe = StableDiffusionPipeline.from_pretrained("IDEA-CCNL/Taiyi-Stable-Diffusion-1B-Chinese-v0.1", torch_dtype=torch.float16 if device == "cuda" else torch.float32)
+        pipe = pipe.to(device)
+        print("Image generation model loaded successfully.")
+    except Exception as e:
+        print(f"Error loading image generation model: {e}")
+        pipe = None # 如果加载失败，将pipe设为None
+
+    # 定义蓝图，虽然当前views.py可能直接定义路由，但使用蓝图是更好的实践
+    bp = Blueprint('main', __name__) # 假设视图逻辑使用了一个名为 'main' 的蓝图
+
+    @bp.route('/generate-image', methods=['POST'])
+    def generate_image():
+        """
+        图像生成路由
+        接收POST请求，包含JSON格式的prompt字段
+        返回生成的图像URL
+        """
+        if pipe is None:
+            return jsonify({"error": "Image generation model not loaded."}), 500
+
+        data = request.get_json()
+        if not data or 'prompt' not in data:
+            return jsonify({"error": "Invalid request. 'prompt' field is required."}), 400
+
+        prompt = data['prompt']
+        print(f"Received image generation request with prompt: {prompt}")
+
+        try:
+            # 调用模型生成图像
+            # num_inference_steps 可以调整生成质量和速度
+            image = pipe(prompt, num_inference_steps=50).images[0]
+
+            # 生成唯一的图片文件名 (使用uuid确保唯一性)
+            image_filename = f"{uuid.uuid4()}.png"
+            image_path = os.path.join(GENERATED_IMAGES_DIR, image_filename)
+
+            # 保存图片
+            image.save(image_path)
+            print(f"Image saved to {image_path}")
+
+            # 构建图片的静态访问URL
+            # 假设你的Flask应用将 /static 映射到 backend/app/static 目录
+            image_url = f"/static/generated_images/{image_filename}"
+
+            return jsonify({"success": True, "image_url": image_url})
+
+        except Exception as e:
+            print(f"Error during image generation: {e}")
+            return jsonify({"error": f"Failed to generate image: {e}"}), 500
+
+    # 注册蓝图 (如果使用了蓝图)
+    app.register_blueprint(bp)
 
     return app

@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 import hashlib
 import uuid
+import json
 
 # 创建一个简单的数据库接口类，替代 SQLAlchemy
 class Database:
@@ -63,23 +64,54 @@ class Database:
 # 创建数据库实例
 db = Database()
 
+def json_loads_safe(value, default=None):
+    """安全地解析JSON字符串"""
+    if not value:
+        return default
+    try:
+        return json.loads(value)
+    except:
+        return default
+
 # 定义简单的模型类
 class User:
     @staticmethod
     def get_all():
-        return db.fetch_all("SELECT * FROM users")
+        users = db.fetch_all("SELECT * FROM users")
+        for user in users:
+            User._process_json_fields(user)
+        return users
     
     @staticmethod
     def get_by_id(user_id):
-        return db.fetch_one("SELECT * FROM users WHERE id = ?", (user_id,))
+        user = db.fetch_one("SELECT * FROM users WHERE id = ?", (user_id,))
+        if user:
+            User._process_json_fields(user)
+        return user
     
     @staticmethod
     def get_by_username(username):
-        return db.fetch_one("SELECT * FROM users WHERE username = ?", (username,))
+        user = db.fetch_one("SELECT * FROM users WHERE username = ?", (username,))
+        if user:
+            User._process_json_fields(user)
+        return user
     
     @staticmethod
     def get_by_email(email):
-        return db.fetch_one("SELECT * FROM users WHERE email = ?", (email,))
+        user = db.fetch_one("SELECT * FROM users WHERE email = ?", (email,))
+        if user:
+            User._process_json_fields(user)
+        return user
+    
+    @staticmethod
+    def _process_json_fields(user):
+        """处理用户对象中的JSON字段"""
+        if user:
+            user['favorite_colors'] = json_loads_safe(user.get('favorite_colors'), [])
+            user['story_preferences'] = json_loads_safe(user.get('story_preferences'), [])
+            user['favorite_characters'] = json_loads_safe(user.get('favorite_characters'), [])
+            user['fear_list'] = json_loads_safe(user.get('fear_list'), [])
+        return user
     
     @staticmethod
     def create(username, email, password):
@@ -215,6 +247,92 @@ class User:
         comment_total = comment_likes['total'] if comment_likes and comment_likes['total'] else 0
         
         return post_total + comment_total
+
+    @staticmethod
+    def update_avatar(user_id, avatar_path):
+        """更新用户头像"""
+        db.execute(
+            "UPDATE users SET avatar_path = ? WHERE id = ?",
+            (avatar_path, user_id)
+        )
+        return User.get_by_id(user_id)
+
+    @staticmethod
+    def update_profile(user_id, user_data):
+        """更新用户资料"""
+        conn = None
+        try:
+            conn = get_db_connection()
+            
+            # 构建更新语句
+            update_fields = []
+            params = []
+            
+            # 添加基本字段
+            if 'email' in user_data:
+                update_fields.append('email = ?')
+                params.append(user_data['email'])
+            
+            if 'nickname' in user_data:
+                update_fields.append('nickname = ?')
+                params.append(user_data['nickname'])
+            
+            if 'age' in user_data:
+                update_fields.append('age = ?')
+                params.append(user_data['age'])
+            
+            if 'gender' in user_data:
+                update_fields.append('gender = ?')
+                params.append(user_data['gender'])
+            
+            # 添加JSON字段
+            if 'favorite_colors' in user_data:
+                update_fields.append('favorite_colors = ?')
+                params.append(json.dumps(user_data['favorite_colors']))
+            
+            if 'story_preferences' in user_data:
+                update_fields.append('story_preferences = ?')
+                params.append(json.dumps(user_data['story_preferences']))
+            
+            if 'favorite_characters' in user_data:
+                update_fields.append('favorite_characters = ?')
+                params.append(json.dumps(user_data['favorite_characters']))
+            
+            if 'fear_list' in user_data:
+                update_fields.append('fear_list = ?')
+                params.append(json.dumps(user_data['fear_list']))
+            
+            # 添加头像字段
+            if 'avatar' in user_data:
+                update_fields.append('avatar = ?')
+                params.append(user_data['avatar'])
+            
+            # 如果没有要更新的字段，直接返回成功
+            if not update_fields:
+                return True
+            
+            # 添加用户ID
+            params.append(user_id)
+            
+            # 执行更新
+            query = f"UPDATE users SET {', '.join(update_fields)} WHERE id = ?"
+            print(f"Executing query: {query}")
+            print(f"Parameters: {params}")
+            
+            conn.execute(query, params)
+            conn.commit()
+            
+            return True
+            
+        except Exception as e:
+            print(f"Error in update_profile: {e}")
+            if conn:
+                conn.rollback()
+            return False
+            
+        finally:
+            if conn:
+                conn.close()
 
 class Post:
     @staticmethod

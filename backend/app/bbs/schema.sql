@@ -8,7 +8,16 @@ CREATE TABLE IF NOT EXISTS users (
     email TEXT NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
     salt TEXT NOT NULL,
-    created_at TEXT NOT NULL
+    created_at TEXT NOT NULL,
+    avatar_path TEXT DEFAULT 'picture/default_avatar.png',
+    nickname TEXT,
+    age INTEGER CHECK (age BETWEEN 5 AND 9),
+    gender TEXT CHECK (gender IN ('boy', 'girl', 'neutral')),
+    favorite_colors TEXT,  -- JSON数组存储
+    story_preferences TEXT,  -- JSON数组存储
+    favorite_characters TEXT,  -- JSON数组存储
+    fear_list TEXT,  -- JSON数组存储
+    language_level TEXT DEFAULT 'basic'  -- basic(5-6岁) 或 advanced(7-9岁)
 );
 
 -- 创建帖子表
