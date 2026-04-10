@@ -11,9 +11,9 @@ from ..models import Post
 from ..utils import login_required, allowed_file
 
 load_dotenv()
-# 添加 chatTest 目录到 Python 路径
+# 添加 tests 目录到 Python 路径以引入 chatTest
 import pathlib
-sys.path.append(str(pathlib.Path(__file__).parent.parent.parent / 'chatTest'))
+sys.path.append(str(pathlib.Path(__file__).parent.parent.parent.parent / 'tests'))
 # 根据目录结构调整为正确的相对导入
 from chatTest.chat import chat_stream
 
