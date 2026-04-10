@@ -1,5 +1,5 @@
 # run.py in backend
-from app.views import create_app
+from app.app import create_app
  
 app = create_app()
  

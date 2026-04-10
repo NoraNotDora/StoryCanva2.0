@@ -383,6 +383,7 @@ h6,
 .classes-item .bg-light {
     background-color: #f8f9fa!important;
     border: 1px solid rgba(0,0,0,0.05);
+    height: 100%;
 }
 
 .classes-item img.rounded-circle {
@@ -651,8 +652,15 @@ section.card {
 }
 
 .classes-item {
-    display: block !important;
-    border: 2px solid red !important;
+    display: flex !important;
+    flex-direction: column;
+    height: 100%;
+}
+
+.classes-item .bg-light {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 /* 确保动画库已加载 */

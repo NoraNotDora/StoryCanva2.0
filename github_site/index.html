@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>StoryCanva 系统介绍</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="./static/css/css2.css" rel="stylesheet">
+    <link href="./static/css/all.min.css" rel="stylesheet">
+    <link href="./static/css/bootstrap-icons.css" rel="stylesheet">
+    <link href="./static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./static/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid bg-white p-0">
+        <nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top px-4 px-lg-5 py-lg-0">
+            <a href="./" class="navbar-brand">
+                <h1 class="m-0 text-primary"><i class="fa fa-book-reader me-3"></i>StoryCanva</h1>
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <div class="navbar-nav ms-auto py-0">
+                    <a href="./" class="nav-item nav-link active"><i class="fas fa-info-circle"></i> 介绍</a>
+                    <a href="https://github.com/NoraNotDora/StoryCanva2.0" class="nav-item nav-link" target="_blank" rel="noreferrer"><i class="fab fa-github"></i> 仓库</a>
+                </div>
+            </div>
+        </nav>
+        <div class="container-fluid page-header position-relative mb-5">
+            <div class="container py-5">
+                <h1 class="display-3 text-white mb-3">StoryCanva 系统介绍</h1>
+                <p class="fs-5 fw-medium text-white mb-4 pb-2">通过对话引导、图像生成与拼贴融合，支持儿童完成绘本共创</p>
+            </div>
+        </div>
+        <div class="container-xxl py-5">
+            <div class="container">
+                <div class="text-center mx-auto mb-5" style="max-width: 700px;">
+                    <h1 class="mb-3">算法能力</h1>
+                    <p class="mb-0">系统采用儿童对话模型、素材生成模型与拼贴融合模型，形成从故事构思到插图生成的完整链路。</p>
+                </div>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="facility-item">
+                            <div class="facility-icon bg-primary">
+                                <span class="bg-primary"></span>
+                                <i class="fa fa-lightbulb fa-3x text-primary"></i>
+                                <span class="bg-primary"></span>
+                            </div>
+                            <div class="facility-text bg-primary">
+                                <h3 class="text-primary mb-3">儿童对话模型</h3>
+                                <p class="mb-0">基于 Qiaoban-7B 实现故事对话引导，帮助儿童梳理角色、情节和表达逻辑。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="facility-item">
+                            <div class="facility-icon bg-success">
+                                <span class="bg-success"></span>
+                                <i class="fa fa-paint-brush fa-3x text-success"></i>
+                                <span class="bg-success"></span>
+                            </div>
+                            <div class="facility-text bg-success">
+                                <h3 class="text-success mb-3">素材生成模型</h3>
+                                <p class="mb-0">基于太乙 Diffusion 将文本描述生成图像素材，支持多主题拼贴创作。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="facility-item">
+                            <div class="facility-icon bg-warning">
+                                <span class="bg-warning"></span>
+                                <i class="fa fa-users fa-3x text-warning"></i>
+                                <span class="bg-warning"></span>
+                            </div>
+                            <div class="facility-text bg-warning">
+                                <h3 class="text-warning mb-3">拼贴融合模型</h3>
+                                <p class="mb-0">基于 Collage Diffusion 完成多素材融合，生成统一风格的绘本插图。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container-xxl py-5 bg-light">
+            <div class="container">
+                <div class="row g-5 align-items-center">
+                    <div class="col-lg-6">
+                        <img class="img-fluid rounded" src="./demo_images/page02_img01.jpeg" alt="绘本创作模块演示">
+                    </div>
+                    <div class="col-lg-6">
+                        <h1 class="mb-4">系统功能</h1>
+                        <p><i class="fa fa-check text-primary me-3"></i>绘本创作：拼贴画板 + 故事机器人交互</p>
+                        <p><i class="fa fa-check text-primary me-3"></i>成就激励：按创作数量解锁奖牌与进度</p>
+                        <p><i class="fa fa-check text-primary me-3"></i>社区分享：发布作品、浏览画廊、查看详情</p>
+                        <p><i class="fa fa-check text-primary me-3"></i>个人中心：信息编辑、作品管理、互动查看</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container-xxl py-5">
+            <div class="container">
+                <div class="text-center mx-auto mb-5" style="max-width: 700px;">
+                    <h1 class="mb-3">功能演示截图</h1>
+                </div>
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="classes-item">
+                            <div class="bg-light rounded p-4 pt-5 mt-n5">
+                                <img class="img-fluid rounded mb-3" src="./demo_images/page04_img01.jpeg" alt="成就激励模块">
+                                <h3 class="d-block text-center h3 mt-3 mb-4">成就激励模块</h3>
+                                <p class="text-center mb-0">按创作数量发放奖牌并显示成长进度，增强持续创作动力。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="classes-item">
+                            <div class="bg-light rounded p-4 pt-5 mt-n5">
+                                <img class="img-fluid rounded mb-3" src="./demo_images/page06_img01.jpeg" alt="社区分享模块">
+                                <h3 class="d-block text-center h3 mt-3 mb-4">社区分享模块</h3>
+                                <p class="text-center mb-0">支持发布故事、浏览他人作品和查看详情页。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="classes-item">
+                            <div class="bg-light rounded p-4 pt-5 mt-n5">
+                                <img class="img-fluid rounded mb-3" src="./demo_images/page07_img01.jpeg" alt="个人信息管理模块">
+                                <h3 class="d-block text-center h3 mt-3 mb-4">个人信息管理模块</h3>
+                                <p class="text-center mb-0">可查看个人主页、互动情况并进行资料编辑。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container-xxl py-5 bg-light">
+            <div class="container text-center">
+                <h1 class="mb-4">制作成员</h1>
+                <p class="mb-2">总负责：李彩桦（算法和系统开发、后期代码重构）</p>
+                <p class="mb-2">交互与UI设计：陈星雅</p>
+                <p class="mb-2">算法开发：陈国林</p>
+                <p class="mb-0">系统开发：陈诗琪、邱谦</p>
+            </div>
+        </div>
+        <div class="container-fluid bg-dark text-white-50 footer pt-5 mt-5">
+            <div class="container py-5">
+                <div class="row g-5">
+                    <div class="col-lg-12 col-md-12 text-center">
+                        <h3 class="text-white mb-4">StoryCanva</h3>
+                        <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>South China Normal University</p>
+                        <p class="mb-2"><i class="fa fa-globe me-3"></i>https://NoraNotDora.github.io/StoryCanva2.0/</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="./static/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

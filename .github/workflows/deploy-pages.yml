@@ -1,0 +1,48 @@
+name: Deploy StoryCanva Intro Page
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - name: Prepare site files
+        run: |
+          mkdir -p _site/static
+          cp github_site/index.html _site/index.html
+          cp -r github_site/demo_images _site/demo_images
+          cp -r frontend/static/css _site/static/
+          cp -r frontend/static/js _site/static/
+          cp -r frontend/static/font _site/static/
+          cp -r frontend/static/image _site/static/
+          cp -r frontend/static/picture _site/static/
+          cp -r frontend/static/webfonts _site/static/
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
